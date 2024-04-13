@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Últimos lançamentos
+{% endblock %}
+
+{% block content %}
+    {% include 'flash.html' %}
+    <div class="container">
+        <div class="div-menu">
+            <p class="messages">Aqui você pode consultar seus últimos lançamentos.</p>
+            <h2>Bombas da empresa</h2>
+            {% if resultados_bomba %}
+                <div class="scrollable-table">
+                    <table border="1">
+                        <tr>
+                            <th>Data</th>
+                            <th>Motorista</th>
+                            <th>Placa</th>
+                            <th>Volume</th>
+                            <th>KM</th>
+                            <th>Posto</th>
+                        </tr>
+                        {% for resultado in resultados_bomba %}
+                            <tr>
+                                <td>{{ resultado.data }}</td>
+                                <td>{{ resultado.motorista }}</td>
+                                <td>{{ resultado.placa }}</td>
+                                <td>{{ resultado.volume }}</td>
+                                <td>{{ resultado.quilometragem }}</td>
+                                <td>{{ resultado.posto }}</td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            {% else %}
+                <div class="alert alert-warning" role="alert">
+                    Não há dados disponíveis para exibir.
+                </div>
+            {% endif %}
+            <br>
+            <h2>Postos de combustível</h2>
+            {% if resultados_posto %}
+                <div class="scrollable-table">
+                    <table border="1">
+                        <tr>
+                            <th>Data</th>
+                            <th>Motorista</th>
+                            <th>Placa</th>
+                            <th>Volume</th>
+                            <th>KM</th>
+                            <th>Posto</th>
+                            <th>Preço</th>
+                        </tr>
+                        {% for resultado in resultados_posto %}
+                            <tr>
+                                <td>{{ resultado.data }}</td>
+                                <td>{{ resultado.motorista }}</td>
+                                <td>{{ resultado.placa }}</td>
+                                <td>{{ resultado.volume }}</td>
+                                <td>{{ resultado.quilometragem }}</td>
+                                <td>{{ resultado.posto }}</td>
+                                <td>{{ resultado.preco }}</td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            {% else %}
+                <div class="alert alert-warning" role="alert">
+                    Não há dados disponíveis para exibir.
+                </div>
+            {% endif %}
+            <br>
+            <h2>Entregas de combustível</h2>
+            {% if resultados_entrega %}
+                <div class="scrollable-table">
+                    <table border="1">
+                        <tr>
+                            <th>Data</th>
+                            <th>Volume</th>
+                            <th>Posto</th>
+                            <th>Odômetro</th>
+                            <th>Preço</th>
+                        </tr>
+                        {% for resultado in resultados_entrega %}
+                            <tr>
+                                <td>{{ resultado.data }}</td>
+                                <td>{{ resultado.volume }}</td>
+                                <td>{{ resultado.posto }}</td>
+                                <td>{{ resultado.odometro }}</td>
+                                <td>{{ resultado.preco }}</td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            {% else %}
+                <div class="alert alert-warning" role="alert">
+                    Não há dados disponíveis para exibir.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

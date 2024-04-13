@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="manifest" href="/static/manifest.json">
+    <title>{% block title %}{% endblock %}</title>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top" style=" background-color: #191745;">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/home">
+                <img src="{{ url_for('static', filename='images/logo_text.png')}}" style="max-width: 200px; height: auto;" alt="Logo" />
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav">
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" aria-current="page" href="{{ url_for('front_end.home')}}">&bull; Página Inicial</a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" aria-current="page" href="{{ url_for('front_end.abastecimentos')}}">&bull; Abastecimentos</a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" aria-current="page" href="{{ url_for('front_end.entrega_combustivel')}}">&bull; Entrega de combustível</a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" aria-current="page" href="{{ url_for('front_end.ultimos_lancamentos')}}">&bull; Últimos lançamentos</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item logout" role="presentation" style="margin-left: auto;">
+                        <a class="nav-link" id="username-link" style="padding: 0px; margin-right: 0px; color: white; display: inline; user-select: none;">
+                            {{ current_user.username|upper }}
+                            <img src="{{ url_for('static', filename='icons/user.svg')}}" style="height: 30px; width: auto; margin-right: 20px;" alt="user_icon"/>
+                        </a>
+                        <a class="nav-link" href="{{ url_for('front_end.logout')}}" onclick="logout()" style="display: inline">
+                            Sair
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    {% block content %}{% endblock %}
+    <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <script src="{{ url_for('static', filename='main.js') }}"></script>
+    <script type="text/javascript">var isAdmin = {{ current_user.is_admin | tojson }};</script>
+</body>
+</html>

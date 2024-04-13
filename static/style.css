@@ -1,0 +1,288 @@
+body {
+    background-color: #191745;
+}
+
+h1 {
+    font-family: "Inconsolata", monospace;
+    font-weight: 900;
+    text-align: left;
+}
+
+label {
+    font-weight: 500;
+    margin-bottom: 10px;
+}
+
+p {
+    margin: 0px;
+}
+
+.container {
+    background-color: #ffffff;
+    padding: 20px;
+    width: 500px;
+    margin: 95px auto 20px auto;
+    border: 1px solid #000;
+    border-radius: 10px
+}
+
+.dynamic-options {
+    position: absolute;
+    display: none;
+    max-height: 150px;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    margin-top: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+}
+
+.dynamic-options.show {
+    display: block;
+    background: white;
+}
+
+.dynamic-option {
+    cursor: pointer;
+    padding: 10px;
+    border-bottom: 1px;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.btn {
+    margin: 0 auto;
+    width: 48%;
+    display: inline-block;
+}
+
+.botoes-container {
+    text-align: center;
+}
+
+.navbar {
+    border-bottom: 3px solid #fff000;
+    font-size: 120%;
+    font-weight: 900;
+}
+
+.navbar-nav {
+    margin-top: 0.5rem;
+}
+
+.navbar-toggler {
+    margin-left: auto;
+}
+
+.nav-link {
+    font-family: "Inconsolata", monospace;
+    margin-right: 30px;
+}
+
+.hidden {
+    display: none;
+}
+
+.div-menu {
+    text-align: center;
+    display: inline-block;
+}
+
+.div-submenu {
+    display: inline-block;
+    width: 48%;
+    border: 2px solid #000000;
+    border-radius: 15px;
+    padding-top: 10px;
+    transition: background-color 0.3s;
+}
+
+.div-submenu-text {
+    margin-bottom: 10px;
+}
+
+.div-submenu:active {
+    background-color: #cccccc;
+}
+
+.div-menu-item {
+    font-family: "Inconsolata", monospace;
+    color: #000000;
+    font-weight: 900;
+    font-size: 20px;
+    text-decoration: none;
+}
+
+#welcome_message {
+    font-weight: 900;
+    padding-top: 10px;
+}
+
+.messages {
+    font-family: "Inconsolata", monospace;
+    font-size: 20px;
+    margin-bottom: 20px;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    align-items: center;
+    justify-content: center;
+    top: 10%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    transition: opacity 0.2s ease-out;
+}
+
+.modal.show {
+    display: flex;
+}
+
+.fade-out {
+    opacity: 0;
+}
+
+.modal-content {
+    text-align: center;
+    border-radius: 10px;
+    border: 1px solid #000;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.modal-body {
+    font-family: "Monaco", monospace;
+    font-weight: 600;
+}
+
+.flash-error {
+    background-color: #fab3ba;
+}
+
+.flash-text-error {
+    color: #73000b;
+}
+
+.flash-info {
+    background-color: #ffdc71;
+}
+
+.flash-text-info {
+    color: #694f00;
+}
+
+.flash-success {
+    background-color: #b6d7a8;
+}
+
+.flash-text-success {
+    color: #184600;
+}
+
+.logout {
+    margin-bottom: 5px;
+}
+
+.login-form {
+    text-align: left;
+}
+
+#div-preco {
+    flex-direction: column;
+}
+
+.input-preco {
+    position: relative;
+    display: inline-block;
+}
+
+.input-preco > i {
+    position: absolute;
+    display: block;
+    transform: translate(0, -50%);
+    top: 50%;
+    pointer-events: none;
+    width: 25px;
+    text-align: center;
+    font-style: normal;
+}
+
+#preco {
+    padding-left: 25px;
+    padding-right: 0px;
+}
+
+table {
+    border-collapse: collapse;
+    table-layout: fixed;
+    width: 150%;
+}
+
+th {
+    background-color: gray;
+}
+
+th, td {
+    border: 1px solid black;
+    padding: 10px;
+    text-align: center;
+    word-wrap: break-word;
+}
+
+.scrollable-table {
+    text-align: center;
+    display: inline-block;
+    overflow-x: auto;
+    margin: 30px auto;
+    max-width: 100%;
+}
+
+/* Estilos responsivos */
+
+@media (max-width: 567px) {
+
+    .div-menu-item {
+        font-size: 3.7vw;
+    }
+
+    .nav-link {
+        margin-bottom: 10px;
+    }
+
+    .logout {
+        margin-top: 5px;
+    }
+
+    .messages {
+        font-size: 5vw;
+    }
+
+    .container {
+        width: 95%;
+    }
+
+    .scrollable-table {
+        overflow-x: auto;
+        margin: 20px auto;
+    }
+
+    table {
+        width: 150%;
+    }
+
+    th, td {
+        padding: 5px;
+        font-size: 12px;
+    }
+
+}
