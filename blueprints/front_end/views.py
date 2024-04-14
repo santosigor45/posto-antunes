@@ -81,14 +81,14 @@ def processar_formulario():
                 data=datetime.strptime(request.form.get("data"), "%Y-%m-%d").date(),
                 motorista=request.form.get("motorista"),
                 placa=request.form.get("placa"),
-                observacoes=request.form.get("observacoes"),
-                quilometragem=request.form.get("quilometragem"),
+                observacoes=request.form.get("observacoes") or None,
+                quilometragem=request.form.get("quilometragem") or None,
                 volume=request.form.get("volume").replace(",", "."),
                 cidade=request.form.get("cidade"),
                 posto=request.form.get("posto"),
-                odometro=request.form.get("odometro"),
-                combustivel=request.form.get("combustivel"),
-                preco=request.form.get("preco").replace(",", ".")
+                odometro=request.form.get("odometro") or None,
+                combustivel=request.form.get("combustivel") or None,
+                preco=request.form.get("preco").replace(",", ".") or None
             )
 
         elif formulario_id == "entrega_combustivel":
