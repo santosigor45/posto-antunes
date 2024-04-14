@@ -469,6 +469,7 @@ function exibirMensagemFlash(mensagem, tipo) {
     flash_text.classList.add("flash-text-" + tipo);
     flash_content.classList.add("flash-" + tipo);
     flash_text.innerHTML = mensagem;
+    console.log(mensagem);
 
     // Adicionar um evento para fechar o modal após 3 segundos
     setTimeout(function () {
