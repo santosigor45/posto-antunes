@@ -12,6 +12,12 @@ class MyModelView(ModelView):
         flash('Você não tem permissão para acessar esta página.', 'error')
         return redirect(url_for('front_end.home', next=request.url))
 
+    def scaffold_list_columns(self):
+        columns = super(MyModelView, self).scaffold_list_columns()
+        if 'id' not in columns:
+            columns.insert(0, 'id')
+        return columns
+
 
 class MyAdminIndexView(AdminIndexView):
     def is_accessible(self):
