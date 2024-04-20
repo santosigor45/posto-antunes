@@ -28,20 +28,24 @@ def entrega_combustivel():
 
 
 def ultimos_lancamentos():
+    # Query the last five fueling records at stations labeled "BOMBA"
     lancamentos_bomba = Abastecimentos.query\
         .filter(Abastecimentos.user == current_user.username)\
         .filter(Abastecimentos.posto.contains("BOMBA"))\
         .order_by(Abastecimentos.id.desc()).limit(5).all()
 
+    # Query the last five fueling records at other stations
     lancamentos_posto = Abastecimentos.query\
         .filter(Abastecimentos.user == current_user.username)\
         .filter(not_(Abastecimentos.posto.contains("BOMBA")))\
         .order_by(Abastecimentos.id.desc()).limit(5).all()
 
+    # Query the last five fuel delivery records
     lancamentos_entrega = EntregaCombustivel.query\
         .filter(EntregaCombustivel.user == current_user.username)\
         .order_by(EntregaCombustivel.id.desc()).limit(5).all()
 
+    # Construct a list of dicts from the "BOMBA" fueling records for the template
     resultados_bomba = [{'data': lancamento.data,
                          'motorista': lancamento.motorista,
                          'placa': lancamento.placa,
@@ -49,6 +53,7 @@ def ultimos_lancamentos():
                          'quilometragem': lancamento.quilometragem,
                          'posto': lancamento.posto} for lancamento in lancamentos_bomba]
 
+    # Construct a list of dicts from other fueling records for the template
     resultados_posto = [{'data': lancamento.data,
                          'motorista': lancamento.motorista,
                          'placa': lancamento.placa,
@@ -57,12 +62,14 @@ def ultimos_lancamentos():
                          'posto': lancamento.posto,
                          'preco': lancamento.preco} for lancamento in lancamentos_posto]
 
+    # Construct a list of dicts from fuel delivery records for the template
     resultados_entrega = [{'data': lancamento.data,
                            'volume': int(lancamento.volume),
                            'posto': lancamento.posto,
                            'odometro': lancamento.odometro,
                            'preco': lancamento.preco} for lancamento in lancamentos_entrega]
 
+    # Return the results to the specified template
     return render_template('ultimos_lancamentos.html',
                            resultados_bomba=resultados_bomba,
                            resultados_posto=resultados_posto,
@@ -75,6 +82,7 @@ def processar_formulario():
         dados_coletados = None
         formulario_id = request.form.get('formulario_id')
 
+        # Collect data based on form ID
         if formulario_id == "abastecimentos":
             dados_coletados = Abastecimentos(
                 user=current_user.username,
@@ -101,12 +109,14 @@ def processar_formulario():
                 preco=request.form.get("preco").replace(",", ".")
             )
 
+        # Adjust posto field for "BOMBA" entries
         if "BOMBA" in dados_coletados.posto:
             odometro_atual = int(dados_coletados.odometro)
 
             if dados_coletados.posto == "BOMBA - PINDA":
                 menor_diferenca = None
                 odometro_posto = {}
+                # Check for closest odometer reading at specific pumps
                 for bomba in ["BOMBA - PINDA 1", "BOMBA - PINDA 2"]:
                     resultado = EntregaCombustivel.query.filter_by(posto=bomba).filter(
                         EntregaCombustivel.odometro <= odometro_atual).order_by(
@@ -115,6 +125,7 @@ def processar_formulario():
                         odometro_posto[bomba] = int(resultado.odometro)
 
                 if odometro_posto:
+                    # Determine the pump with the smallest difference in odometer readings
                     if len(odometro_posto) == 2:
                         diferenca = {}
                         print(odometro_posto)
@@ -129,6 +140,7 @@ def processar_formulario():
                     dados_coletados.posto = menor_diferenca
                     print(f"Bomba de entrega alterada para {menor_diferenca}.")
 
+            # Handle delivery or fueling based on form ID
             if formulario_id == "entrega_combustivel":
                 ultima_entrega = PontoVirada.query.filter_by(posto=dados_coletados.posto).order_by(
                     PontoVirada.id.desc()).first()
@@ -186,28 +198,36 @@ def processar_formulario():
 
 
 def login():
+    # Check if the request method is POST for form submission
     if request.method == "POST":
         username = request.form["username"].lower()
         password = request.form["password"]
 
+        # Ensure username and password fields are filled
         if not username or not password:
             flash('Preencha os dados corretamente!', 'info')
             return redirect(url_for('front_end.login'))
 
+        # Check if user exists in the database
         existing_user = User.query.filter_by(username=username).first()
         if not existing_user:
             flash('Usuário não encontrado!', 'info')
             return redirect(url_for('front_end.login'))
 
+        # Validate the provided password
         if not check_password_hash(existing_user.password, password):
             flash('Senha incorreta!', 'info')
             return redirect(url_for('front_end.login'))
+
+        # Log in the user and redirect to the home page
         login_user(existing_user, remember=True)
         return redirect(url_for("front_end.home"))
 
+    # Redirect authenticated users directly to home
     if current_user.is_authenticated:
         return redirect(url_for("front_end.home"))
     else:
+        # Show the login form to unauthenticated users
         return render_template("login.html")
 
 

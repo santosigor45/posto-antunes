@@ -20,11 +20,9 @@ function checkServerAvailability() {
         .catch(() => false);
 }
 
-// Função para pré-carregar ativos estáticos no cache
 async function preCache() {
     const cache = await caches.open(CACHE_NAME);
 
-    // Verificar se os recursos já estão no cache antes de tentar adicioná-los
     const cachedRequests = await cache.keys();
     const newRequests = STATIC_ASSETS.map(request => {
         return new Request(request);
@@ -35,14 +33,14 @@ async function preCache() {
     }
 }
 
-// Evento de instalação do service worker
+// Install event for the Service Worker
 self.addEventListener('install', event => {
     console.log("[SW] installed");
     self.skipWaiting();
     event.waitUntil(preCache());
 });
 
-// Função para limpar caches antigos
+// Removes old caches
 async function cleanupCache() {
     const keys = await caches.keys();
     const keysToDelete = keys.map(key => {
@@ -54,26 +52,25 @@ async function cleanupCache() {
     return Promise.all(keysToDelete);
 }
 
-// Evento de ativação do service worker
+// Activation event for the Service Worker
 self.addEventListener('activate', event => {
     console.log("[SW] activated");
     event.waitUntil(cleanupCache());
 });
 
+// Normalizes URLs to prevent cache misses due to URL parameters
 function normalizeUrl(url) {
     const urlObj = new URL(url);
     return urlObj.origin + urlObj.pathname;
 }
 
+// Handles fetch events by serving cached content when offline or fetching from network when online
 async function fetchAssets(event) {
     const cache = await caches.open(CACHE_NAME);
     const request = event.request;
 
-    const exactRoutes = [
-        '/admin',
-        '/logout/',
-        '/ultimos_lancamentos'
-    ].map(route => normalizeUrl(location.origin + route));
+    const exactRoutes = ['/admin', '/logout/', '/ultimos_lancamentos']
+                        .map(route => normalizeUrl(location.origin + route));
     const requestUrl = normalizeUrl(request.url);
     const isExactMatch = exactRoutes.includes(requestUrl);
 
@@ -113,13 +110,10 @@ async function fetchAssets(event) {
             return response;
         } catch (err) {
             console.error('Fetch failed:', err);
-
             const cachedResponse = await cache.match(request);
-
             if (cachedResponse) {
                 return cachedResponse;
             }
-
             return new Response(null, { status: 404, statusText: 'Not Found' });
         }
     } else {
@@ -127,7 +121,7 @@ async function fetchAssets(event) {
     }
 }
 
-// Evento de busca do service worker
+// Responds to fetch events
 self.addEventListener('fetch', event => {
     event.respondWith(fetchAssets(event));
 });

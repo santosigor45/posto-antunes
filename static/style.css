@@ -247,7 +247,7 @@ th, td {
     max-width: 100%;
 }
 
-/* Estilos responsivos */
+/* Responsive styles for smaller screens */
 
 @media (max-width: 567px) {
 

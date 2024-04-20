@@ -9,20 +9,22 @@ document.addEventListener('DOMContentLoaded', function () {
     adminLoader();
 });
 
+// Add focus event listeners to all input fields to ensure they scroll into view.
 document.querySelectorAll('input').forEach(input => {
   input.addEventListener('focus', scrollToView);
 });
 
 const enviarBtn = document.getElementById('enviar-btn');
-
 const camposDoFormulario = document.querySelectorAll('input, select');
 
+// Disable the send button shortly after click to prevent multiple submissions.
 if (enviarBtn) {
     enviarBtn.addEventListener('click', function () {
         setTimeout(function () {
             enviarBtn.disabled = true;
         }, 100);
     });
+
     camposDoFormulario.forEach(function (campo) {
         campo.addEventListener('input', function () {
             enviarBtn.disabled = false;
@@ -30,23 +32,22 @@ if (enviarBtn) {
     });
 }
 
+// Check server availability.
 function checkServerAvailability() {
     return fetch('/ping')
         .then(response => response.ok ? true : false)
         .catch(() => false);
 }
 
+// Scroll the active element smoothly into view after a delay.
 function scrollToView(event) {
-  // O elemento que recebeu o foco
-  var activeElement = event.target;
-
-  // Tempo de atraso para esperar o teclado aparecer
-  setTimeout(() => {
-    // Garantir que o elemento esteja na visualização
-    activeElement.scrollIntoView({behavior: 'smooth', block: 'center'});
-  }, 300); // Ajuste o tempo conforme necessário
+    var activeElement = event.target;
+    setTimeout(() => {
+        activeElement.scrollIntoView({behavior: 'smooth', block: 'center'});
+    }, 300);
 }
 
+// Modify admin-specific links if the user is an administrator.
 function adminLoader() {
     var userContainer = document.getElementById('username-link')
     if (typeof isAdmin !== 'undefined' && isAdmin) {
@@ -56,11 +57,11 @@ function adminLoader() {
     }
 }
 
+// Set up event listeners for forms to handle submissions and interact with the server.
 function setupFormListeners() {
     document.querySelectorAll('form.dados').forEach(function (form) {
         form.addEventListener('submit', function (event) {
             event.preventDefault();
-
             var formData = new FormData(this);
             formData.append('formulario_id', form.getAttribute('id'));
 
@@ -78,21 +79,21 @@ function setupFormListeners() {
     });
 }
 
+// Send form data to server and handle the response.
 function sendDataToServer(url, formData) {
     return fetch(url, { method: 'POST', body: formData }).then(response => response.json());
 }
 
+// Open IndexedDB to store data if the server cannot be reached.
 function openIndexedDB() {
     return new Promise((resolve, reject) => {
         var request = indexedDB.open("formularioDB", 1);
-
         request.onupgradeneeded = function (event) {
             var db = event.target.result;
             if (!db.objectStoreNames.contains("formularioStore")) {
                 db.createObjectStore("formularioStore", { keyPath: "id", autoIncrement: true });
             }
         };
-
         request.onsuccess = function (event) {
             resolve(event.target.result);
         };
@@ -103,6 +104,7 @@ function openIndexedDB() {
     });
 }
 
+// Store unsent data in IndexedDB and log success or error.
 function salvarNoIndexDB(data) {
     openIndexedDB()
         .then(db => {
@@ -115,6 +117,7 @@ function salvarNoIndexDB(data) {
         .catch(error => console.error('Erro ao salvar no IndexedDB:', error));
 }
 
+// Send cached data from IndexedDB to server when the connection is available.
 function sendCachedData() {
     openIndexedDB()
         .then(db => {
@@ -147,17 +150,16 @@ function sendCachedData() {
         .catch(error => console.error('Erro ao enviar dados em cache:', error));
 }
 
+// Recursive function to send each item of cached data to the server.
 function sendCachedDataRecursiveStep(cachedData, index) {
     if (index < cachedData.length) {
         var item = cachedData[index];
         var formData = new FormData();
 
-        // Reconstruct the FormData object from the item data
         for (var key in item.data) {
             formData.append(key, item.data[key]);
         }
 
-        // Ensure the formulario_id is appended to the FormData
         formData.append('formulario_id', item.formulario_id);
 
         sendDataToServer(item.url, formData)
@@ -168,19 +170,19 @@ function sendCachedDataRecursiveStep(cachedData, index) {
             .then(db => {
                 var transaction = db.transaction(["formularioStore"], "readwrite");
                 var objectStore = transaction.objectStore("formularioStore");
-                objectStore.delete(item.id);  // Deletes the individual item after it's been sent.
+                objectStore.delete(item.id);
                 return transaction.complete;
             })
             .then(() => {
-                sendCachedDataRecursiveStep(cachedData, index + 1);  // Proceeds to the next item.
+                sendCachedDataRecursiveStep(cachedData, index + 1);
             })
             .catch(error => {
                 exibirMensagemFlash(error.message, 'error');
-                // Optionally, handle re-trying failed requests or logging the error.
             });
     }
 }
 
+// Convert FormData into a simple object.
 function formDataToObject(formData) {
     var formDataObject = {};
     formData.forEach(function(value, key){
@@ -231,23 +233,18 @@ function setupPlacaInput() {
 
         filterAndDisplayOptions(valorAtual, all_placas, placa, placaOptions);
 
-        // Permita apenas letras nos 3 primeiros caracteres
         if (valorAtual.length <= 3) {
             placa.value = valorAtual.replace(/[^A-Z]/g, '');
         }
-        // Adicione um hífen antes do 4º caractere
         else if (valorAtual.length === 4 && valorAtual.charAt(3) !== '-' && valorAtual.charAt(3) >= '0' && valorAtual.charAt(3) <= '9') {
             placa.value = valorAtual.substring(0, 3) + '-' + valorAtual.charAt(3);
         }
-
         else if (valorAtual.length === 6) {
             placa.value = valorAtual.substring(0, 5) + valorAtual.charAt(5).replace(/[^A-J0-9]/g, '');
         }
-
         else if (valorAtual.length >= 7) {
             placa.value = valorAtual.substring(0, 6) + valorAtual.charAt(6).replace(/[^0-9]/g, '') + valorAtual.charAt(7).replace(/[^0-9]/g, '');
         }
-
         else if (valorAtual.length === 4) {
             placa.value = valorAtual.slice(0, -1);
         }
@@ -257,7 +254,6 @@ function setupPlacaInput() {
         var valorAtual = placa.value;
 
         if (event.key === 'Backspace') {
-            // Se o 5º caractere for deletado, remova o hífen
             if (valorAtual.length === 5) {
                 placa.value = valorAtual.slice(0, -1);
             }
@@ -285,47 +281,43 @@ function filterAndDisplayOptions(valorAtual, allOptions, inputField, optionsCont
     for (const option of allOptions) {
         const optionValue = option.innerText.toUpperCase();
 
-        // Verifica se a opção inclui o valor atual
         if (optionValue.includes(valorAtualUpper)) {
             const index = optionValue.indexOf(valorAtualUpper);
-            // Quanto menor o índice, mais relevante é a opção
             matches.push({option, index});
         }
     }
 
-    // Ordena as correspondências pelo índice
     matches.sort((a, b) => a.index - b.index);
 
     for (const match of matches) {
         const clonedOption = match.option.cloneNode(true);
         optionsContainer.appendChild(clonedOption);
 
-        // Adiciona um evento de clique à opção
         clonedOption.addEventListener('click', function() {
             inputField.value = clonedOption.innerText;
-            optionsContainer.classList.remove('show'); // Esconde as opções após a seleção
+            optionsContainer.classList.remove('show');
         });
     }
 
     optionsContainer.classList.add('show');
 }
 
-// Função para confirmar a limpeza do formulário
+// Confirm the intention to clear the form data with a confirmation dialog.
 function confirmarLimpeza(form) {
-    // Exibe a janela de confirmação
     var confirmar = confirm("Tem certeza que deseja limpar tudo?");
-    // Se o usuário clicar em "OK", limpa o formulário
     if (confirmar) {
         limparFormulario(form);
     }
 }
 
+// Resets the form fields and updates the date to the current date.
 function limparFormulario(form) {
     var formulario = document.getElementById(form);
     formulario.reset();
     atualizarData();
 }
 
+// Adjusts UI elements based on the selected fuel station name.
 function verificarNomeDoPosto() {
     var valorSelecionado = document.getElementById("posto").value;
 
@@ -346,10 +338,10 @@ function verificarNomeDoPosto() {
     }
 }
 
+// Validates and formats the vehicle plate input.
 function verificarPlaca() {
     var placaElement = document.getElementById("placa");
     var kmElement = document.getElementById("quilometragem");
-
     if (placaElement.value == "SEM-PLACA") {
         placaElement.removeAttribute('pattern');
         placaElement.maxLength = "9"
@@ -365,6 +357,7 @@ function verificarPlaca() {
     }
 }
 
+// Formats input values as currency.
 function myCurrency(e) {
     var x = document.getElementById("preco");
     var currentVal = x.value;
@@ -386,15 +379,10 @@ function myCurrency(e) {
     }
 }
 
-
+// Highlights the navbar item that corresponds to the current page URL.
 function highlightActiveNavbarItem() {
-    // Obtém o URL da página atual
     let currentUrl = window.location.href;
-
-    // Obtém os itens da barra de navegação
     let navbarItems = document.querySelectorAll(".navbar-nav .nav-link");
-
-    // Destaca o item que corresponde ao URL atual
     navbarItems.forEach((navbarItem) => {
         if (currentUrl.includes(navbarItem.href)) {
             navbarItem.classList.add("active");
@@ -402,6 +390,7 @@ function highlightActiveNavbarItem() {
     })
 }
 
+// Updates the date input field to today's date in ISO format.
 function atualizarData() {
     var today = new Date();
     var offset = today.getTimezoneOffset() * 60000;
@@ -412,87 +401,60 @@ function atualizarData() {
     }
 }
 
+// Displays a personalized greeting based on the current time of day.
 function exibirMensagemPersonalizada() {
-    // Obtém a hora atual do sistema
     var agora = new Date();
     var hora = agora.getHours();
-
-    // Seleciona a mensagem com base na hora
-    if (hora < 12) {
-        mensagem = "Bom dia, ";
-    } else if (hora < 18) {
-        mensagem = "Boa tarde, ";
-    } else {
-        mensagem = "Boa noite, ";
-    }
-
-    // Exibe a mensagem na página
+    var mensagem = hora < 12 ? "Bom dia, " : hora < 18 ? "Boa tarde, " : "Boa noite, ";
     var elementoMensagem = document.getElementById("welcome_message");
     if (elementoMensagem) {
         elementoMensagem.innerHTML = mensagem + elementoMensagem.innerHTML;
     }
 }
 
+// Displays a modal if there are any flash messages.
 function exibirModal() {
-    // Encontrar o modal pelo ID
     var modal = document.getElementById('myModal');
-
-    // Verificar se há mensagens flash
     var flashes = document.querySelector('.flashes');
     if (flashes && flashes.children.length > 0) {
-        // Exibir o modal se houver mensagens flash
         modal.classList.add('show');
-        var modal_id = modal.getAttribute("id")
-
-        // Adicionar um evento para fechar o modal após 2 segundos
         setTimeout(function () {
             fecharModal(modal_id);;
         }, 3000);
-
-        // Adicionar um evento para fechar o modal quando clicar fora dele
         window.addEventListener('click', function (event) {
             if (event.target === modal) {
-                fecharModal(modal_id);;
+                fecharModal(modal.getAttribute("id"));;
             }
         });
     }
 }
 
+// Displays and manages flash messages in a modal.
 function exibirMensagemFlash(mensagem, tipo) {
     var modal = document.getElementById('jsModal');
-    var modal_id = modal.getAttribute("id")
+    modal.classList.add('show');
     var flash_content = document.getElementById('js-flash-content');
     var flash_text = document.getElementById('js-flash-text');
-
-    // Define o conteúdo da mensagem flash
-    modal.classList.add('show');
     flash_text.classList.add("flash-text-" + tipo);
     flash_content.classList.add("flash-" + tipo);
     flash_text.innerHTML = mensagem;
-
-    // Adicionar um evento para fechar o modal após 3 segundos
     setTimeout(function () {
         flash_text.classList.remove("flash-text-" + tipo);
         flash_content.classList.remove("flash-" + tipo);
-        fecharModal(modal_id);
+        fecharModal(modal.getAttribute("id"));
     }, 3000);
-
-    // Adicionar um evento para fechar o modal quando clicar fora dele
     window.addEventListener('click', function (event) {
         if (event.target === modal) {
-            fecharModal(modal_id);
+            fecharModal(modal.getAttribute("id"));
         }
     });
 }
 
+// Closes the modal with a fade-out effect.
 function fecharModal(modal_id) {
     var modal = document.getElementById(modal_id);
-
-    // Adicionar uma classe para iniciar a transição
     modal.classList.add('fade-out');
-
-    // Aguardar um pequeno atraso antes de remover a classe 'show'
     setTimeout(function () {
         modal.classList.remove('show', 'fade-out');
-    }, 200);  // Ajuste o tempo conforme necessário
+    }, 200);
 }
