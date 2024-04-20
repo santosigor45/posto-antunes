@@ -19,6 +19,26 @@ class MyModelView(ModelView):
         return columns
 
 
+class AbastecimentosView(MyModelView):
+    column_filters = ['user', 'data', 'motorista', 'placa', 'cidade', 'posto']
+    column_searchable_list = ['id', 'user', 'data', 'motorista', 'placa']
+
+
+class EntregaCombustivelView(MyModelView):
+    column_filters = ['user', 'data', 'posto']
+    column_searchable_list = ['id', 'user', 'data', 'posto']
+
+
+class PlacasView(MyModelView):
+    column_filters = ['veiculo']
+    column_searchable_list = ['placa']
+
+
+class MotoristasView(MyModelView):
+    column_filters = ['cidade']
+    column_searchable_list = ['motorista']
+
+
 class MyAdminIndexView(AdminIndexView):
     def is_accessible(self):
         return current_user.is_authenticated and current_user.is_admin
