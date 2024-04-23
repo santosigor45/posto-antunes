@@ -20,13 +20,13 @@ class MyModelView(ModelView):
 
 
 class AbastecimentosView(MyModelView):
-    column_filters = ['user', 'data', 'motorista', 'placa', 'cidade', 'posto']
-    column_searchable_list = ['id', 'user', 'data', 'motorista', 'placa']
+    column_filters = ['user', 'data_lanc', 'data_abast', 'motorista', 'placa', 'cidade', 'posto']
+    column_searchable_list = ['id', 'user', 'data_lanc', 'data_abast', 'motorista', 'placa']
 
 
 class EntregaCombustivelView(MyModelView):
-    column_filters = ['user', 'data', 'posto']
-    column_searchable_list = ['id', 'user', 'data', 'posto']
+    column_filters = ['user', 'data_lanc', 'data_abast', 'posto']
+    column_searchable_list = ['id', 'user', 'data_lanc', 'data_abast', 'posto']
 
 
 class PlacasView(MyModelView):

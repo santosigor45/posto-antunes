@@ -54,7 +54,8 @@ class PontoVirada(db.Model):
 class EntregaCombustivel(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True, nullable=False)
     user = db.Column(db.String(10), nullable=False)
-    data = db.Column(db.Date, nullable=False)
+    data_lanc = db.Column(db.DateTime)
+    data_abast = db.Column(db.Date, nullable=False)
     volume = db.Column(db.Integer, nullable=False)
     posto = db.Column(db.String(30), nullable=False)
     odometro = db.Column(db.Integer, nullable=False)
@@ -64,7 +65,8 @@ class EntregaCombustivel(db.Model):
 class Abastecimentos(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True, nullable=False)
     user = db.Column(db.String(10), nullable=False)
-    data = db.Column(db.Date, nullable=False)
+    data_lanc = db.Column(db.DateTime)
+    data_abast = db.Column(db.Date, nullable=False)
     motorista = db.Column(db.String(50), nullable=False)
     placa = db.Column(db.String(10), nullable=False)
     observacoes = db.Column(db.String(100))

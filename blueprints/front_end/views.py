@@ -46,7 +46,7 @@ def ultimos_lancamentos():
         .order_by(EntregaCombustivel.id.desc()).limit(5).all()
 
     # Construct a list of dicts from the "BOMBA" fueling records for the template
-    resultados_bomba = [{'data': lancamento.data,
+    resultados_bomba = [{'data': lancamento.data_abast,
                          'motorista': lancamento.motorista,
                          'placa': lancamento.placa,
                          'volume': int(lancamento.volume),
@@ -54,7 +54,7 @@ def ultimos_lancamentos():
                          'posto': lancamento.posto} for lancamento in lancamentos_bomba]
 
     # Construct a list of dicts from other fueling records for the template
-    resultados_posto = [{'data': lancamento.data,
+    resultados_posto = [{'data': lancamento.data_abast,
                          'motorista': lancamento.motorista,
                          'placa': lancamento.placa,
                          'volume': lancamento.volume,
@@ -63,7 +63,7 @@ def ultimos_lancamentos():
                          'preco': lancamento.preco} for lancamento in lancamentos_posto]
 
     # Construct a list of dicts from fuel delivery records for the template
-    resultados_entrega = [{'data': lancamento.data,
+    resultados_entrega = [{'data': lancamento.data_abast,
                            'volume': int(lancamento.volume),
                            'posto': lancamento.posto,
                            'odometro': lancamento.odometro,
@@ -86,7 +86,8 @@ def processar_formulario():
         if formulario_id == "abastecimentos":
             dados_coletados = Abastecimentos(
                 user=current_user.username,
-                data=datetime.strptime(request.form.get("data"), "%Y-%m-%d").date(),
+                data_lanc=datetime.now().replace(microsecond=0),
+                data_abast=datetime.strptime(request.form.get("data"), "%Y-%m-%d").date(),
                 motorista=request.form.get("motorista"),
                 placa=request.form.get("placa"),
                 observacoes=request.form.get("observacoes") or None,
@@ -102,7 +103,8 @@ def processar_formulario():
         elif formulario_id == "entrega_combustivel":
             dados_coletados = EntregaCombustivel(
                 user=current_user.username,
-                data=datetime.strptime(request.form.get("data"), "%Y-%m-%d").date(),
+                data_lanc=datetime.now().replace(microsecond=0),
+                data_abast=datetime.strptime(request.form.get("data"), "%Y-%m-%d").date(),
                 volume=request.form.get("volume"),
                 posto=request.form.get("posto"),
                 odometro=request.form.get("odometro"),
