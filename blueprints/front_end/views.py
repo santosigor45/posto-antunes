@@ -4,6 +4,7 @@ from flask_login import login_user, logout_user, current_user
 from models import *
 from sqlalchemy import not_
 from datetime import datetime
+from zoneinfo import ZoneInfo
 
 
 def home():
@@ -86,7 +87,7 @@ def processar_formulario():
         if formulario_id == "abastecimentos":
             dados_coletados = Abastecimentos(
                 user=current_user.username,
-                data_lanc=datetime.now().replace(microsecond=0),
+                data_lanc=datetime.now(ZoneInfo("America/Sao_Paulo")).replace(microsecond=0),
                 data_abast=datetime.strptime(request.form.get("data"), "%Y-%m-%d").date(),
                 motorista=request.form.get("motorista"),
                 placa=request.form.get("placa"),
@@ -103,7 +104,7 @@ def processar_formulario():
         elif formulario_id == "entrega_combustivel":
             dados_coletados = EntregaCombustivel(
                 user=current_user.username,
-                data_lanc=datetime.now().replace(microsecond=0),
+                data_lanc=datetime.now(ZoneInfo("America/Sao_Paulo")).replace(microsecond=0),
                 data_abast=datetime.strptime(request.form.get("data"), "%Y-%m-%d").date(),
                 volume=request.form.get("volume"),
                 posto=request.form.get("posto"),
