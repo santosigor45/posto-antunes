@@ -225,7 +225,7 @@ p {
 table {
     border-collapse: collapse;
     table-layout: fixed;
-    width: 150%;
+    width: 100%;
 }
 
 th {
