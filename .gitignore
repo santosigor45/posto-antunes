@@ -120,6 +120,7 @@ celerybeat.pid
 *.sage.py
 
 # Environments
+env.list
 .idea
 .env
 .venv
@@ -159,6 +160,9 @@ posto_antunes.zip
 
 # dev database
 .backup
+
+# docker config files
+.dockerignore
 
 # PyCharm
 #  JetBrains specific template is maintained in a separate JetBrains.gitignore that can

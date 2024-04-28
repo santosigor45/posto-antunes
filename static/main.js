@@ -419,7 +419,7 @@ function exibirModal() {
     if (flashes && flashes.children.length > 0) {
         modal.classList.add('show');
         setTimeout(function () {
-            fecharModal(modal_id);;
+            fecharModal(odal.getAttribute("id"));;
         }, 3000);
         window.addEventListener('click', function (event) {
             if (event.target === modal) {
