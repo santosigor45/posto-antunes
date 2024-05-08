@@ -80,7 +80,7 @@ class Abastecimentos(db.Model):
 
 
 class User(db.Model, UserMixin):
-    __tablename__ = "users"
+    __tablename__ = "posto_users"
     id = db.Column(db.Integer, primary_key=True, autoincrement=True, nullable=False)
     username = db.Column(db.String(140))
     password = db.Column(db.String(512))
