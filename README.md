@@ -1,4 +1,6 @@
 # Posto Antunes
+![Screenshot 1](/art/screenshot-1.png?raw=true)
+![Screenshot 2](/art/screenshot-2.png?raw=true)
 ## Overview
 Posto Antunes is a Progressive Web Application (PWA) designed to streamline fuel management for a fleet of 200 vehicles in a school transportation company. It features a form with backend and frontend validation to capture and manage fuel supply data reliably.
 
