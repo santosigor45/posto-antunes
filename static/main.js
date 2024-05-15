@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', function () {
     setupFormListeners();
     setupMotoristaInput();
     setupPlacaInput();
+    sendCachedData();
     adminLoader();
 });
 
