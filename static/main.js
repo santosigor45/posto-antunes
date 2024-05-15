@@ -54,6 +54,7 @@ function adminLoader() {
     if (typeof isAdmin !== 'undefined' && isAdmin) {
         if (isAdmin === true) {
             userContainer.setAttribute('href', "/admin")
+
         }
     }
 }

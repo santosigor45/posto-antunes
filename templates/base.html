@@ -35,7 +35,11 @@
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item logout" role="presentation" style="margin-left: auto;">
                         <a class="nav-link" id="username-link" style="padding: 0px; margin-right: 0px; color: white; display: inline; user-select: none;">
-                            {{ current_user.username|upper }}
+                            {% if current_user.is_admin is true %}
+                                Admin - {{ current_user.username|upper }}
+                            {% else %}
+                                {{ current_user.username|upper }}
+                            {% endif %}
                             <img src="{{ url_for('static', filename='icons/user.svg')}}" style="height: 30px; width: auto; margin-right: 20px;" alt="user_icon"/>
                         </a>
                         <a class="nav-link" href="{{ url_for('front_end.logout')}}" onclick="logout()" style="display: inline">
