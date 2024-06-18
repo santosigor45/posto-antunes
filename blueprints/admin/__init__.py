@@ -1,7 +1,7 @@
 from flask_admin import Admin
 from .admin_views import *
 from ext.database import db
-from models import Abastecimentos, EntregaCombustivel, Placas, Motoristas, Cidades, Postos, PontoVirada, VolumeAtual
+from models import Abastecimentos, EntregaCombustivel, Placas, Motoristas, Cidades, Postos, PontoVirada, VolumeAtual, User
 
 
 def init_app(app):
@@ -15,3 +15,4 @@ def init_app(app):
     admin.add_view(MyModelView(Postos, db.session, category='Dados'))
     admin.add_view(MyModelView(PontoVirada, db.session, category='Dados'))
     admin.add_view(MyModelView(VolumeAtual, db.session, category='Dados'))
+    admin.add_view(MyModelView(User, db.session, category='Dados'))
