@@ -141,7 +141,6 @@ def processar_formulario():
                         menor_diferenca = next(iter(odometro_posto.keys()))
 
                     dados_coletados.posto = menor_diferenca
-                    print(f"Bomba de entrega alterada para {menor_diferenca}.")
 
             # Handle delivery or fueling based on form ID
             if formulario_id == "entrega_combustivel":
@@ -203,7 +202,7 @@ def processar_formulario():
 def login():
     # Check if the request method is POST for form submission
     if request.method == "POST":
-        username = request.form["username"].lower()
+        username = request.form["username"].lower().strip()
         password = request.form["password"]
 
         # Ensure username and password fields are filled
