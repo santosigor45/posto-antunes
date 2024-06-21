@@ -74,6 +74,10 @@ p {
     display: inline-block;
 }
 
+.container-fluid {
+    overflow-y: auto;
+}
+
 .navbar {
     border-bottom: 3px solid #fff000;
     font-size: 120%;
@@ -89,6 +93,7 @@ p {
 }
 
 .nav-link {
+    white-space: nowrap;
     font-family: "Inconsolata", monospace;
     margin-right: 30px;
 }

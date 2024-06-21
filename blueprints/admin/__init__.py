@@ -6,7 +6,6 @@ from models import Abastecimentos, EntregaCombustivel, Placas, Motoristas, Cidad
 
 def init_app(app):
     admin = Admin(app, template_mode='bootstrap3', base_template='admin_template.html', url='/admin', index_view=MyAdminIndexView())
-
     admin.add_view(AbastecimentosView(Abastecimentos, db.session, category='Lançamentos'))
     admin.add_view(EntregaCombustivelView(EntregaCombustivel, db.session, category='Lançamentos'))
     admin.add_view(PlacasView(Placas, db.session, category='Dados'))
