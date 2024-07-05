@@ -21,7 +21,7 @@
                 <input type="text" class="form-control" id="motorista" name="motorista" required>
                 <div id="motoristaOptions" class="dynamic-options">
                     {% for motorista in motoristas %}
-                        <div class="dynamic-option">{{ motorista.motorista }}</div>
+                        <div class="dynamic-option">{{ motorista.motorista }} <b>| {{ motorista.cidade }}</b></div>
                     {% endfor %}
                 </div>
             </div>
@@ -45,7 +45,7 @@
             <div class="form-group">
                 <label for="cidade">Cidade</label>
                 <select name="cidade" id="cidade" class="form-control" required>
-                    <option disabled selected value="" class="default-option">Selecione a cidade do veículo</option>
+                    <option disabled selected value="">Selecione a cidade do veículo</option>
                     {% for cidade in cidades %}
                         <option>{{ cidade.cidade }}</option>
                     {% endfor %}
@@ -54,8 +54,13 @@
             <div class="form-group">
                 <label for="posto">Posto</label>
                 <select name="posto" id="posto" class="form-control" onchange="verificarNomeDoPosto()" required>
-                    <option disabled selected value="" style="color: gray;">Selecione um posto</option>
-                    {% for posto in postos %}
+                    <option disabled selected value="">Selecione um posto</option>
+                    <option disabled value="">---- Garagens ----</option>
+                    {% for posto in postos if 'BOMBA' in posto.posto %}
+                        <option value="{{ posto.posto }}">{{ posto.posto }}</option>
+                    {% endfor %}
+                    <option disabled value="">---- Terceiros ----</option>
+                    {% for posto in postos if 'BOMBA' not in posto.posto %}
                         <option value="{{ posto.posto }}">{{ posto.posto }}</option>
                     {% endfor %}
                 </select>
@@ -71,7 +76,7 @@
             <div class="form-group hidden" id="div-combustivel">
                 <label for="combustivel">Combustível</label>
                 <select name="combustivel" id="combustivel" class="form-control">
-                    <option disabled selected value="" style="color: gray;">Selecione o combustível</option>
+                    <option disabled selected value="">Selecione o combustível</option>
                     <option value="DIESEL S-10">DIESEL S-10</option>
                     <option value="GASOLINA">GASOLINA</option>
                     <option value="GASOLINA ADT">GASOLINA ADT</option>

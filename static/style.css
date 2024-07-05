@@ -92,6 +92,10 @@ p {
     margin-left: auto;
 }
 
+.nav-item {
+    white-space: nowrap;
+}
+
 .nav-link {
     white-space: nowrap;
     font-family: "Inconsolata", monospace;
