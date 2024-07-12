@@ -296,7 +296,7 @@ function filterAndDisplayOptions(valorAtual, allOptions, inputField, optionsCont
         optionsContainer.appendChild(clonedOption);
 
         clonedOption.addEventListener('click', function() {
-            inputField.value = clonedOption.innerText;
+            inputField.value = clonedOption.innerText.split(' |')[0];
             optionsContainer.classList.remove('show');
         });
     }
