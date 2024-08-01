@@ -23,7 +23,7 @@
             <div class="form-group">
                 <label for="posto">Bomba</label>
                 <select name="posto" id="posto" class="form-control" required>
-                    <option disabled selected value="" style="color: gray;">Selecione uma bomba de combustível</option>
+                    <option disabled selected value="">Selecione uma bomba de combustível</option>
                     {% for posto in postos_proprios %}
                         <option>{{ posto.posto }}</option>
                     {% endfor %}
