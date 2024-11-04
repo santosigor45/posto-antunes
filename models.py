@@ -85,6 +85,7 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(140))
     password = db.Column(db.String(512))
     is_admin = db.Column(db.Boolean, default=False)
+    is_manager = db.Column(db.Boolean, default=False)
 
     def __init__(self, username, password):
         self.username = username

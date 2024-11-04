@@ -2,7 +2,7 @@ from flask import render_template, request, flash, redirect, url_for, send_from_
 from werkzeug.security import check_password_hash
 from flask_login import login_user, logout_user, current_user
 from models import *
-from sqlalchemy import not_
+from sqlalchemy import not_, func
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
@@ -26,6 +26,15 @@ def abastecimentos():
 def entrega_combustivel():
     postos_proprios = [posto for posto in Postos.query.all() if "bomba" in posto.posto.lower()]
     return render_template("entrega_combustivel.html", postos_proprios=postos_proprios)
+
+
+def graficos_relatorios():
+    motoristas = [motorista for motorista in Motoristas.query.all()]
+    postos = [posto for posto in Postos.query.all()]
+    cidades = [cidade for cidade in Cidades.query.all()]
+    placas = [placa for placa in Placas.query.all()]
+    return render_template("graficos_relatorios.html", placas=placas, postos=postos,
+                           cidades=cidades, motoristas=motoristas)
 
 
 def ultimos_lancamentos():
@@ -75,6 +84,134 @@ def ultimos_lancamentos():
                            resultados_bomba=resultados_bomba,
                            resultados_posto=resultados_posto,
                            resultados_entrega=resultados_entrega)
+
+
+def reports():
+    tipo = request.form.get('tipo')
+    data_inicial = request.form.get('initial-date')
+    data_final = request.form.get('ending-date')
+    filtro = request.form.get('filtro')
+    filtro_value = request.form.get(filtro)
+
+    # Converte as datas para o formato Date
+    data_inicial_date = datetime.strptime(data_inicial, '%Y-%m-%d').date()
+    data_final_date = datetime.strptime(data_final, '%Y-%m-%d').date()
+
+    # Formata as datas para exibição
+    data_inicial_str = data_inicial_date.strftime('%d/%m/%Y')
+    data_final_str = data_final_date.strftime('%d/%m/%Y')
+
+    if filtro == 'placa':
+        # Relatório: Lista todos os abastecimentos para a 'placa' especificada no intervalo de datas
+        report_query = db.session.query(Abastecimentos).filter(
+            Abastecimentos.data_abast >= data_inicial_date,
+            Abastecimentos.data_abast <= data_final_date,
+            Abastecimentos.placa == filtro_value
+        ).order_by(Abastecimentos.data_abast)
+        report_data = report_query.all()
+
+        # Gráfico: Soma 'volume' por 'data_abast' para a 'placa' especificada
+        graph_query = db.session.query(
+            Abastecimentos.data_abast,
+            func.sum(Abastecimentos.volume).label('volume_total')
+        ).filter(
+            Abastecimentos.data_abast >= data_inicial_date,
+            Abastecimentos.data_abast <= data_final_date,
+            Abastecimentos.placa == filtro_value
+        ).group_by(Abastecimentos.data_abast).order_by(Abastecimentos.data_abast)
+        graph_data = graph_query.all()
+
+        is_detailed = True
+
+    elif filtro == 'cidade':
+        # Relatório: Lista todos os abastecimentos para a 'cidade' especificada no intervalo de datas
+        report_query = db.session.query(Abastecimentos).filter(
+            Abastecimentos.data_abast >= data_inicial_date,
+            Abastecimentos.data_abast <= data_final_date,
+            Abastecimentos.cidade == filtro_value
+        ).order_by(Abastecimentos.data_abast)
+        report_data = report_query.all()
+
+        # Gráfico: Soma 'volume' por 'placa' para a 'cidade' especificada
+        graph_query = db.session.query(
+            Abastecimentos.placa,
+            func.sum(Abastecimentos.volume).label('volume_total')
+        ).filter(
+            Abastecimentos.data_abast >= data_inicial_date,
+            Abastecimentos.data_abast <= data_final_date,
+            Abastecimentos.cidade == filtro_value
+        ).group_by(Abastecimentos.placa).order_by(Abastecimentos.placa)
+        graph_data = graph_query.all()
+
+        is_detailed = True
+
+    elif filtro == 'posto':
+        # **Modificação para o caso especial 'BOMBA - PINDA'**
+        if filtro_value == 'BOMBA - PINDA':
+            # Inclui 'BOMBA - PINDA 1' e 'BOMBA - PINDA 2'
+            filter_condition = Abastecimentos.posto.startswith('BOMBA - PINDA')
+        else:
+            filter_condition = Abastecimentos.posto == filtro_value
+
+        # Relatório: Lista todos os abastecimentos para o 'posto' especificado no intervalo de datas
+        report_query = db.session.query(Abastecimentos).filter(
+            Abastecimentos.data_abast >= data_inicial_date,
+            Abastecimentos.data_abast <= data_final_date,
+            filter_condition
+        ).order_by(Abastecimentos.data_abast)
+        report_data = report_query.all()
+
+        # Gráfico: Soma 'volume' por 'placa' para o 'posto' especificado
+        graph_query = db.session.query(
+            Abastecimentos.placa,
+            func.sum(Abastecimentos.volume).label('volume_total')
+        ).filter(
+            Abastecimentos.data_abast >= data_inicial_date,
+            Abastecimentos.data_abast <= data_final_date,
+            filter_condition
+        ).group_by(Abastecimentos.placa).order_by(Abastecimentos.placa)
+        graph_data = graph_query.all()
+
+        is_detailed = True
+
+    elif filtro == 'motorista':
+        # Relatório e Gráfico: Soma 'volume' por 'placa' para o 'motorista' especificado
+        report_query = db.session.query(
+            Abastecimentos.placa,
+            func.sum(Abastecimentos.volume).label('volume_total')
+        ).filter(
+            Abastecimentos.data_abast >= data_inicial_date,
+            Abastecimentos.data_abast <= data_final_date,
+            Abastecimentos.motorista == filtro_value
+        ).group_by(Abastecimentos.placa).order_by(Abastecimentos.placa)
+        report_data = report_query.all()
+        graph_data = report_data
+
+        is_detailed = False
+
+    else:
+        # Trata valor de filtro inválido
+        return "Filtro inválido", 400
+
+    if tipo == 'grafico':
+        return render_template(
+            'grafico.html',
+            dados=graph_data,
+            filtro=filtro,
+            filtro_value=filtro_value,
+            data_inicial_str=data_inicial_str,
+            data_final_str=data_final_str
+        )
+    else:
+        return render_template(
+            'relatorio.html',
+            dados=report_data,
+            filtro=filtro,
+            filtro_value=filtro_value,
+            is_detailed=is_detailed,
+            data_inicial_str=data_inicial_str,
+            data_final_str=data_final_str
+        )
 
 
 def processar_formulario():

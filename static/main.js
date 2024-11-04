@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', function () {
     setupPlacaInput();
     sendCachedData();
     adminLoader();
+    managerFilter();
 });
 
 // Add focus event listeners to all input fields to ensure they scroll into view.
@@ -59,6 +60,20 @@ function adminLoader() {
     }
 }
 
+function managerFilter() {
+    var navItemUltimosLancamentos = document.querySelector('.ultimos_lancamentos');
+    var navItemGraficosRelatorios = document.querySelector('.graficos_relatorios');
+
+    if (typeof isManager !== 'undefined' && isManager) {
+        if (isManager === true) {
+            navItemUltimosLancamentos.classList.add('hidden');
+            navItemGraficosRelatorios.classList.remove('hidden');
+        } else {
+            navItemGraficosRelatorios.classList.add('hidden');
+        }
+    }
+}
+
 // Set up event listeners for forms to handle submissions and interact with the server.
 function setupFormListeners() {
     document.querySelectorAll('form.dados').forEach(function (form) {
@@ -77,6 +92,21 @@ function setupFormListeners() {
                     exibirMensagemFlash('Dados armazenados. Eles serão enviados quando a conexão for restabelecida.', 'info');
                     limparFormulario(form.getAttribute('id'));
                 });
+        });
+    });
+
+    document.querySelectorAll('form.reports').forEach(function (form) {
+        form.addEventListener('submit', function (event) {
+            // Pegue os valores das datas do formulário
+            const dataInicial = document.getElementById('initial-date').value;
+            const dataFinal = document.getElementById('ending-date').value;
+
+            // Verifique se as datas são válidas e se dataInicial é menor que dataFinal
+            if (new Date(dataInicial) >= new Date(dataFinal)) {
+                exibirMensagemFlash('A data inicial deve ser menor que a data final', 'error');
+                event.preventDefault();
+                return; // Impede o envio do formulário
+            }
         });
     });
 }
@@ -317,6 +347,9 @@ function limparFormulario(form) {
     var formulario = document.getElementById(form);
     formulario.reset();
     atualizarData();
+    if (formulario.id == 'relatorio') {
+        verificarFiltro();
+    }
 }
 
 // Adjusts UI elements based on the selected fuel station name.
@@ -460,3 +493,80 @@ function fecharModal(modal_id) {
         modal.classList.remove('show', 'fade-out');
     }, 200);
 }
+
+var oldValue = null;
+
+function verificarFiltro() {
+    var valorSelecionado = document.getElementById("filtro").value;
+
+    var postoContainer = document.getElementById("posto-container")
+    var cidadeContainer = document.getElementById("cidade-container")
+    var placaContainer = document.getElementById("placa-container")
+    var motoristaContainer = document.getElementById("motorista-container")
+
+    if (!valorSelecionado) {
+        if (oldValue) {
+            oldValue.classList.add('hidden');
+            oldValue.required = false;
+        }
+        oldValue = null;
+    } else if (valorSelecionado == 'posto') {
+        postoContainer.classList.remove('hidden');
+        postoContainer.required = true;
+        if (oldValue) {
+            oldValue.classList.add('hidden');
+            oldValue.required = false;
+        }
+        oldValue = postoContainer;
+
+    } else if (valorSelecionado == 'cidade') {
+        cidadeContainer.classList.remove('hidden');
+        cidadeContainer.required = true;
+        if (oldValue) {
+            oldValue.classList.add('hidden');
+            oldValue.required = false;
+        }
+        oldValue = cidadeContainer;
+
+    } else if (valorSelecionado == 'placa') {
+        placaContainer.classList.remove('hidden');
+        placaContainer.required = true;
+        if (oldValue) {
+            oldValue.classList.add('hidden');
+            oldValue.required = false;
+        }
+        oldValue = placaContainer;
+
+    } else if (valorSelecionado == 'motorista') {
+        motoristaContainer.classList.remove('hidden');
+        motoristaContainer.required = true;
+        if (oldValue) {
+            oldValue.classList.add('hidden');
+            oldValue.required = false;
+        }
+        oldValue = motoristaContainer;
+    }
+}
+
+// Control the appearing/disappearing style of any div
+function showHiddenDiv(element, option) {
+    var elementControlled = []
+    for (var i = 0; i < element.length; i++) {
+        elementControlled[i] = document.getElementById(element[i]);
+
+        if (option.length <= 1) {
+            if (option == 'add') {
+                elementControlled[i].classList.add('hidden');
+            } else if (option == 'remove') {
+                elementControlled[i].classList.remove('hidden');
+            }
+        } else {
+            if (option[i] == 'add') {
+                elementControlled[i].classList.add('hidden');
+            } else if (option[i] == 'remove') {
+                elementControlled[i].classList.remove('hidden');
+            }
+        }
+    }
+}
+

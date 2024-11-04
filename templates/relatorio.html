@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <title>Relatório</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+        th {
+            background-color: #f2f2f2;
+            text-align: left;
+        }
+        tr:nth-child(even){background-color: #f9f9f9;}
+    </style>
+</head>
+<body>
+    <h1>
+        Relatório por {{ filtro.capitalize() }}: {{ filtro_value }} <br>
+        {{ data_inicial_str }} até {{ data_final_str }}
+    </h1>
+
+    {% if is_detailed %}
+        <!-- Exibe a tabela de registros detalhados -->
+        {% if filtro in ['placa', 'cidade', 'posto'] %}
+            <table>
+                <tr>
+                    <th>Data do Abastecimento</th>
+                    <th>Motorista</th>
+                    <th>Placa</th>
+                    <th>Volume (Litros)</th>
+                    <th>Cidade</th>
+                    <th>Posto</th>
+                    <th>Combustível</th>
+                    <th>Preço (R$)</th>
+                    <!-- Adicione outras colunas conforme necessário -->
+                </tr>
+                {% for item in dados %}
+                <tr>
+                    <td>{{ item.data_abast.strftime('%d/%m/%Y') }}</td>
+                    <td>{{ item.motorista }}</td>
+                    <td>{{ item.placa }}</td>
+                    <td>{{ '{:.2f}'.format(item.volume) | replace('.', ',') }}</td>
+                    <td>{{ item.cidade }}</td>
+                    <td>{{ item.posto }}</td>
+                    <td>{{ item.combustivel }}</td>
+                    <td>{{ '{:.2f}'.format(item.preco) | replace('.', ',') }}</td>
+                    <!-- Adicione outros campos conforme necessário -->
+                </tr>
+                {% endfor %}
+            </table>
+        {% endif %}
+    {% else %}
+        <!-- Exibe a tabela com dados agregados para 'motorista' -->
+        <table>
+            <tr>
+                <th>Placa</th>
+                <th>Total Volume (Litros)</th>
+            </tr>
+            {% for placa, volume_total in dados %}
+            <tr>
+                <td>{{ placa }}</td>
+                <td>{{ '{:.2f}'.format(volume_total) | replace('.', ',') }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    {% endif %}
+
+    <!-- Opcional: Adicionar mensagem caso não haja dados -->
+    {% if not dados %}
+        <p>Nenhum dado encontrado para este filtro.</p>
+    {% endif %}
+</body>
+</html>

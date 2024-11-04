@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <title>Gráfico por {{ filtro.capitalize() }}</title>
+    <!-- Incluir a biblioteca Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Incluir o plugin Chart.js Data Labels -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        h1 {
+            text-align: center;
+        }
+        #chart-container {
+            width: 80%;
+            margin: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>
+        Gráfico por {{ filtro.capitalize() }}: {{ filtro_value }} <br>
+        {{ data_inicial_str }} até {{ data_final_str }}
+    </h1>
+    <div id="chart-container">
+        <canvas id="myChart"></canvas>
+    </div>
+
+    <script>
+        // Preparar os dados com base no filtro
+        var filtro = "{{ filtro }}";
+        var filtroValue = {{ filtro_value | tojson }};
+        var dataInicial = "{{ data_inicial_str }}";
+        var dataFinal = "{{ data_final_str }}";
+        var labels = [];
+        var data = [];
+
+        {% if dados %}
+            {% if filtro == 'placa' %}
+                // Para filtro 'placa': Volume por dia
+                {% for data_abast, volume_total in dados %}
+                    labels.push("{{ data_abast.strftime('%d/%m/%Y') }}");
+                    data.push({{ volume_total }});
+                {% endfor %}
+                var chartTitle = 'Volume de Combustível por Dia para Placa ' + filtroValue;
+                var chartType = 'line';
+
+            {% elif filtro == 'cidade' or filtro == 'posto' or filtro == 'motorista' %}
+                // Para filtros 'cidade', 'posto' e 'motorista': Volume por 'placa'
+                {% for placa, volume_total in dados %}
+                    labels.push("{{ placa }}");
+                    data.push({{ volume_total }});
+                {% endfor %}
+                if (filtro === 'cidade') {
+                    var chartTitle = 'Volume por Veículo na Cidade ' + filtroValue;
+                } else if (filtro === 'posto') {
+                    var chartTitle = 'Volume por Veículo no Posto ' + filtroValue;
+                } else if (filtro === 'motorista') {
+                    var chartTitle = 'Volume por Veículo para Motorista ' + filtroValue;
+                }
+                var chartType = 'bar';
+
+            {% else %}
+                // Caso padrão
+                var chartTitle = 'Gráfico';
+                var chartType = 'bar';
+            {% endif %}
+
+            // Configurar o tipo de gráfico e os dados
+            var ctx = document.getElementById('myChart').getContext('2d');
+            var myChart = new Chart(ctx, {
+                type: chartType,
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Volume de Combustível (Litros)',
+                        data: data,
+                        backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1,
+                        fill: chartType === 'line' ? false : true,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        datalabels: {
+                            anchor: 'end',
+                            align: 'top',
+                            formatter: function(value) {
+                                return value.toFixed(2).replace('.', ',') + ' L';
+                            },
+                            font: {
+                                weight: 'bold',
+                                size: 12
+                            },
+                            color: '#000' // Cor dos rótulos
+                        }
+                    },
+                    plugins: [ChartDataLabels],
+                    title: {
+                        display: true,
+                        text: chartTitle,
+                        fontSize: 18
+                    },
+                    scales: {
+                        xAxes: [{
+                            ticks: {
+                                autoSkip: false,
+                                fontSize: 12
+                            },
+                            gridLines: {
+                                display: false
+                            }
+                        }],
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true,
+                                // Define o passo manualmente se necessário
+                                // stepSize: 10
+                            },
+                            gridLines: {
+                                display: true
+                            }
+                        }]
+                    },
+                    legend: {
+                        display: false
+                    }
+                }
+            });
+        {% else %}
+            document.write('<p style="text-align: center;">Nenhum dado encontrado para este filtro.</p>');
+        {% endif %}
+    </script>
+</body>
+</html>

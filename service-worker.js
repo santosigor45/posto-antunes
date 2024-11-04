@@ -86,7 +86,7 @@ async function fetchAssets(event) {
         }
     }
 
-    if (request.url.includes('/processar_formulario') || request.url.includes('/admin')) {
+    if (request.url.includes('/processar_formulario') || request.url.includes('/admin') || request.url.includes('/reports')){
         if (request.url.includes('/admin')) {
             return fetch(request);
         }

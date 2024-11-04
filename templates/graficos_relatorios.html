@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Gráficos e Relatórios
+{% endblock %}
+
+{% block content %}
+    {% include 'flash.html' %}
+    <div class="container">
+        <form action="/reports" method="post" id="relatorio" class="reports" autocomplete="off" target="_blank">
+            <div class="button-container" onclick="showHiddenDiv(['options-container'], ['remove'])">
+                <input type="radio" class="btn-check" id="btn-grafico" name="tipo" autocomplete="off" value="grafico" required/>
+                <label class="btn btn-secondary label-grafico" for="btn-grafico" style="margin-right: 5px;">
+                    Gráfico
+                </label>
+
+                <input type="radio" class="btn-check" id="btn-relatorio" name="tipo" value="relatorio" autocomplete="off" required/>
+                <label class="btn btn-secondary label-relatorio" for="btn-relatorio" style="display: flex;">
+                    <span style="margin: auto;">
+                        Relatório
+                    </span>
+                </label>
+            </div>
+
+            <div class="form-group hidden" id="options-container">
+                <div class="form-group" style="display: flex; padding-top: 15px;">
+                    <div class="form-group">
+                        <label for="initial-date">Data inicial</label>
+                        <input type="date" class="form-control" id="initial-date" name="initial-date" required>
+                    </div>
+                    <div class="form-group" style="margin-left: 5px;">
+                        <label for="ending-date">Data final</label>
+                        <input type="date" class="form-control" id="ending-date" name="ending-date" required>
+                    </div>
+                </div>
+
+                <div class="form-group" style="display: flex;">
+                    <div class="form-group">
+                        <label for="filtro">Por</label>
+                        <select name="filtro" id="filtro" class="form-control" onchange="verificarFiltro()" required>
+                            <option disabled selected value="">Selecione a opção desejada</option>
+                            <option value="cidade">Cidade</option>
+                            <option value="posto">Posto</option>
+                            <option value="motorista">Motorista</option>
+                            <option value="placa">Placa</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group hidden" id="posto-container" style="margin-left: 5px;">
+                        <label for="posto">Posto</label>
+                        <select name="posto" id="posto" class="form-control">
+                            <option disabled selected value="">Selecione um posto</option>
+                            <option disabled value="">---- Garagens ----</option>
+                            {% for posto in postos if 'BOMBA' in posto.posto %}
+                                <option value="{{ posto.posto }}">{{ posto.posto }}</option>
+                            {% endfor %}
+                            <option disabled value="">---- Terceiros ----</option>
+                            {% for posto in postos if 'BOMBA' not in posto.posto %}
+                                <option value="{{ posto.posto }}">{{ posto.posto }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group hidden" id="cidade-container" style="margin-left: 5px;">
+                        <label for="cidade">Cidade</label>
+                        <select name="cidade" id="cidade" class="form-control">
+                            <option disabled selected value="">Selecione a cidade do veículo</option>
+                            {% for cidade in cidades %}
+                                <option>{{ cidade.cidade }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group hidden" id="placa-container" style="margin-left: 5px;">
+                        <label for="placa">Placa</label>
+                        <input type="text" class="form-control" id="placa" pattern="[A-z]{3}-\d[A-j0-9]\d{2}" name="placa" maxlength="8">
+                        <div id="placaOptions" class="dynamic-options">
+                            {% for placa in placas %}
+                                <div class="dynamic-option">{{ placa.placa }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="form-group hidden" id="motorista-container" style="margin-left: 5px;">
+                        <label for="motorista">Motorista</label>
+                        <input type="text" class="form-control" id="motorista" name="motorista">
+                        <div id="motoristaOptions" class="dynamic-options">
+                            {% for motorista in motoristas %}
+                                <div class="dynamic-option">{{ motorista.motorista }} <b>| {{ motorista.cidade }}</b></div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                <div class="button-container">
+                    <button type="button" class="btn btn-danger btn-lg" id="limpar" onclick="confirmarLimpeza('relatorio');">Limpar</button>
+                    <button type="submit" class="btn btn-success btn-lg" id="enviar-btn" style="margin-left: 5px;">Enviar</button>
+                </div>
+            </div>
+        </form>
+    </div>
+{% endblock %}
