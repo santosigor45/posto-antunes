@@ -69,7 +69,7 @@ async function fetchAssets(event) {
     const cache = await caches.open(CACHE_NAME);
     const request = event.request;
 
-    const exactRoutes = ['/admin', '/logout/', '/ultimos_lancamentos']
+    const exactRoutes = ['/admin', '/logout/', '/ultimos_lancamentos', '/pesquisar']
                         .map(route => normalizeUrl(location.origin + route));
     const requestUrl = normalizeUrl(request.url);
     const isExactMatch = exactRoutes.includes(requestUrl);
@@ -86,7 +86,7 @@ async function fetchAssets(event) {
         }
     }
 
-    if (request.url.includes('/processar_formulario') || request.url.includes('/admin') || request.url.includes('/reports')){
+    if (request.url.includes('/process_form') || request.url.includes('/admin')){
         if (request.url.includes('/admin')) {
             return fetch(request);
         }

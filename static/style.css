@@ -13,15 +13,23 @@ label {
     margin-bottom: 10px;
 }
 
-.label-grafico, .label-relatorio {
-    font-weight: 500;
-    font-size: 20px;
-}
-
-#btn-grafico:checked ~ .label-grafico,
-#btn-relatorio:checked ~ .label-relatorio
+#btn-abastecimentos:checked ~ .label-abastecimentos,
+#btn-entrega-combustivel:checked ~ .label-entrega-combustivel
 {
     background-color: #0069D9;
+}
+
+.div-date {
+    width: 400px;
+}
+
+
+.dt-length, .dt-info {
+    text-align: left;
+}
+
+.dt-search {
+    text-align: right;
 }
 
 p {
@@ -72,14 +80,6 @@ p {
     border-radius: 5px;
 }
 
-.button-container {
-    margin: 0;
-    padding: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
 .options-container {
     padding-top: 10px;
 }
@@ -124,7 +124,6 @@ p {
 
 .div-menu {
     text-align: center;
-    display: inline-block;
 }
 
 .div-submenu {
@@ -274,6 +273,21 @@ th, td {
     overflow-x: auto;
     margin: 30px auto;
     max-width: 100%;
+}
+
+.button-container {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.btn-secondary {
+    font-weight: 500;
+    font-size: 15pt;
 }
 
 /* Responsive styles for smaller screens */

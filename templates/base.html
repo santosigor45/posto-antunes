@@ -20,16 +20,16 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav">
                     <li class="nav-item abastecimentos" role="presentation">
-                        <a class="nav-link" aria-current="page" href="{{ url_for('front_end.abastecimentos')}}">&bull; Abastecimentos</a>
+                        <a class="nav-link" aria-current="page" href="{{ url_for('views.abastecimentos')}}">&bull; Abastecimentos</a>
                     </li>
                     <li class="nav-item entrega_combustivel" role="presentation">
-                        <a class="nav-link" aria-current="page" href="{{ url_for('front_end.entrega_combustivel')}}">&bull; Entrega de combustível</a>
+                        <a class="nav-link" aria-current="page" href="{{ url_for('views.entrega_combustivel')}}">&bull; Entrega de combustível</a>
                     </li>
                     <li class="nav-item ultimos_lancamentos" role="presentation">
-                        <a class="nav-link" aria-current="page" href="{{ url_for('front_end.ultimos_lancamentos')}}">&bull; Últimos lançamentos</a>
+                        <a class="nav-link" aria-current="page" href="{{ url_for('views.ultimos_lancamentos')}}">&bull; Últimos lançamentos</a>
                     </li>
-                    <li class="nav-item graficos_relatorios hidden" role="presentation">
-                        <a class="nav-link" aria-current="page" href="{{ url_for('front_end.graficos_relatorios')}}">&bull; Gráficos e Relatórios</a>
+                    <li class="nav-item pesquisar hidden" role="presentation">
+                        <a class="nav-link" aria-current="page" href="{{ url_for('views.pesquisar')}}">&bull; Pesquisar</a>
                     </li>
                 </ul>
                 <ul class="navbar-nav ms-auto">
@@ -42,7 +42,7 @@
                             {% endif %}
                             <img src="{{ url_for('static', filename='icons/user.svg')}}" style="height: 30px; width: auto; margin-right: 20px;" alt="user_icon"/>
                         </a>
-                        <a class="nav-link" href="{{ url_for('front_end.logout')}}" onclick="logout()" style="display: inline">
+                        <a class="nav-link" href="{{ url_for('views.logout')}}" onclick="logout()" style="display: inline">
                             Sair
                         </a>
                     </li>
@@ -53,6 +53,15 @@
     {% block content %}{% endblock %}
     <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
     <script type="text/javascript" charset="utf8" src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/2.1.7/js/dataTables.min.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/2.1.7/js/dataTables.bootstrap5.min.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/plug-ins/1.10.24/sorting/datetime-moment.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/3.1.2/js/dataTables.buttons.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/3.1.2/js/buttons.dataTables.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/3.1.2/js/buttons.print.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/locale/pt-br.min.js"></script>
     <script type="text/javascript" charset="utf8" src="{{ url_for('static', filename='main.js') }}"></script>
     <script>
         var isAdmin = {{ current_user.is_admin | tojson }};

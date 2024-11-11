@@ -62,53 +62,69 @@ function adminLoader() {
 
 function managerFilter() {
     var navItemUltimosLancamentos = document.querySelector('.ultimos_lancamentos');
-    var navItemGraficosRelatorios = document.querySelector('.graficos_relatorios');
+    var navItemPesquisar = document.querySelector('.pesquisar');
 
     if (typeof isManager !== 'undefined' && isManager) {
         if (isManager === true) {
             navItemUltimosLancamentos.classList.add('hidden');
-            navItemGraficosRelatorios.classList.remove('hidden');
+            navItemPesquisar.classList.remove('hidden');
         } else {
-            navItemGraficosRelatorios.classList.add('hidden');
+            navItemPesquisar.classList.add('hidden');
         }
     }
 }
 
 // Set up event listeners for forms to handle submissions and interact with the server.
 function setupFormListeners() {
-    document.querySelectorAll('form.dados').forEach(function (form) {
+    document.querySelectorAll('form.edit, form.delete, form.dados').forEach(function (form) {
         form.addEventListener('submit', function (event) {
             event.preventDefault();
-            var formData = new FormData(this);
-            formData.append('formulario_id', form.getAttribute('id'));
+            const formData = new FormData(this);
+            const formId = form.getAttribute('id');
+            const url = '/process_form/' +
+                        (formId.startsWith('edit') ? 'edit/' :
+                        formId.startsWith('delete') ? 'delete/' : 'send/') +
+                        formId;
 
-            sendDataToServer('/processar_formulario', formData)
+            sendDataToServer(url, formData, form.getAttribute('method'))
                 .then(({ message, type }) => {
+                    if (url.includes('send')) {
+                        limparFormulario(formId);
+                    } else {
+                        $('.modal').modal('hide');
+                        $('#reload-table').click();
+                    }
                     exibirMensagemFlash(message, type);
-                    limparFormulario(form.getAttribute('id'));
+                    console.log(message);
                 })
                 .catch(error => {
-                    salvarNoIndexDB({ url: '/processar_formulario', data: formDataToObject(formData) });
-                    exibirMensagemFlash('Dados armazenados. Eles serão enviados quando a conexão for restabelecida.', 'info');
-                    limparFormulario(form.getAttribute('id'));
+                    if (url.includes('send')) {
+                        salvarNoIndexDB({ url: url, data: formDataToObject(formData) });
+                        exibirMensagemFlash('Dados armazenados. Eles serão enviados quando a conexão for restabelecida.', 'info');
+                        limparFormulario(formId);
+                    } else {
+                        $('.modal').modal('hide');
+                        exibirMensagemFlash('Ocorreu um erro. Tente novamente mais tarde', 'error');
+                    }
+                    console.log(error);
                 });
         });
     });
 
-    document.querySelectorAll('form.reports').forEach(function (form) {
-        form.addEventListener('submit', function (event) {
-            // Pegue os valores das datas do formulário
-            const dataInicial = document.getElementById('initial-date').value;
-            const dataFinal = document.getElementById('ending-date').value;
-
-            // Verifique se as datas são válidas e se dataInicial é menor que dataFinal
-            if (new Date(dataInicial) >= new Date(dataFinal)) {
-                exibirMensagemFlash('A data inicial deve ser menor que a data final', 'error');
-                event.preventDefault();
-                return; // Impede o envio do formulário
-            }
-        });
-    });
+//    document.querySelectorAll('form.reports').forEach(function (form) {
+//        form.addEventListener('submit', function (event) {
+//            // Pegue os valores das datas do formulário
+//            const dataInicial = document.getElementById('initial-date').value;
+//            const dataFinal = document.getElementById('ending-date').value;
+//
+//            // Verifique se as datas são válidas e se dataInicial é menor que dataFinal
+//            if (new Date(dataInicial) >= new Date(dataFinal)) {
+//                exibirMensagemFlash('A data inicial deve ser menor que a data final', 'error');
+//                event.preventDefault();
+//                return; // Impede o envio do formulário
+//            }
+//        });
+//    });
 }
 
 // Send form data to server and handle the response.
@@ -492,60 +508,6 @@ function fecharModal(modal_id) {
     setTimeout(function () {
         modal.classList.remove('show', 'fade-out');
     }, 200);
-}
-
-var oldValue = null;
-
-function verificarFiltro() {
-    var valorSelecionado = document.getElementById("filtro").value;
-
-    var postoContainer = document.getElementById("posto-container")
-    var cidadeContainer = document.getElementById("cidade-container")
-    var placaContainer = document.getElementById("placa-container")
-    var motoristaContainer = document.getElementById("motorista-container")
-
-    if (!valorSelecionado) {
-        if (oldValue) {
-            oldValue.classList.add('hidden');
-            oldValue.required = false;
-        }
-        oldValue = null;
-    } else if (valorSelecionado == 'posto') {
-        postoContainer.classList.remove('hidden');
-        postoContainer.required = true;
-        if (oldValue) {
-            oldValue.classList.add('hidden');
-            oldValue.required = false;
-        }
-        oldValue = postoContainer;
-
-    } else if (valorSelecionado == 'cidade') {
-        cidadeContainer.classList.remove('hidden');
-        cidadeContainer.required = true;
-        if (oldValue) {
-            oldValue.classList.add('hidden');
-            oldValue.required = false;
-        }
-        oldValue = cidadeContainer;
-
-    } else if (valorSelecionado == 'placa') {
-        placaContainer.classList.remove('hidden');
-        placaContainer.required = true;
-        if (oldValue) {
-            oldValue.classList.add('hidden');
-            oldValue.required = false;
-        }
-        oldValue = placaContainer;
-
-    } else if (valorSelecionado == 'motorista') {
-        motoristaContainer.classList.remove('hidden');
-        motoristaContainer.required = true;
-        if (oldValue) {
-            oldValue.classList.add('hidden');
-            oldValue.required = false;
-        }
-        oldValue = motoristaContainer;
-    }
 }
 
 // Control the appearing/disappearing style of any div

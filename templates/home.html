@@ -11,13 +11,13 @@
             <p class="messages" id="welcome_message">{{ current_user.username|upper }}!</p>
             <p class="messages">Selecione abaixo a opção desejada:</p>
             <div class="div-submenu" style="margin-right: 5px;">
-                <a href="{{ url_for('front_end.abastecimentos')}}" class="div-menu-item">
+                <a href="{{ url_for('views.abastecimentos')}}" class="div-menu-item">
                     <img src="{{ url_for('static', filename='images/bomba.png')}}" style="max-width: 80%; height: auto;  margin-bottom: 10px;" alt="logo_bomba" />
                     <p class="div-submenu-text">Novo <br>abastecimento</p>
                 </a>
             </div>
             <div class="div-submenu">
-                <a href="{{ url_for('front_end.entrega_combustivel')}}" class="div-menu-item">
+                <a href="{{ url_for('views.entrega_combustivel')}}" class="div-menu-item">
                     <img src="{{ url_for('static', filename='images/caminhao.png')}}" style="max-width: 80%; height: auto; margin-bottom: 10px;" alt="logo_caminhao" />
                     <p class="div-submenu-text">Entrega <br>de combustível</p>
                 </a>

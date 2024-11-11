@@ -1,0 +1,182 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Pesquisar - Placas
+{% endblock %}
+
+{% block content %}
+    {% include 'flash.html' %}
+    <div class="container" style="width: 70%;">
+        <button class="hidden" id="reload-table"></button>
+        <div class="div-menu">
+            <div class="button-container">
+                <input type="radio" class="btn-check" id="btn-motoristas" name="table-select" autocomplete="off"/>
+                <label class="btn btn-secondary label-motoristas" for="btn-motoristas" style="display: flex; margin-right: 5px;" onclick="window.location = '{{ url_for('views.pesquisar_tables', table='motoristas')}}';">
+                    <span style="margin: auto;">
+                        Motoristas
+                    </span>
+                </label>
+
+                <input type="radio" class="btn-check" id="btn-placas" name="table-select" autocomplete="off" checked/>
+                <label class="btn btn-secondary label-placas" for="btn-placas" style="display: flex; margin-right: 5px;" onclick="window.location = '{{ url_for('views.pesquisar_tables', table='placas')}}';">
+                    <span style="margin: auto;">
+                        Placas
+                    </span>
+                </label>
+            </div>
+            <div class="input-group mb-3 div-date" style="display: flex; margin: auto;" id="cadastrarField">
+                <button class="btn btn-outline-success" id="add-placa" style="margin: auto;">Cadastrar placa</button>
+            </div>
+            <div class="div-table" id="div-table-placas">
+                <table id="table-placas" class="edit-tables" border="1" style="table-layout: auto ; width: 100%; margin-left: auto; margin-right: auto;">
+                    <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Editar</th>
+                            <th>Placa</th>
+                            <th>Veículo</th>
+                            <th>KM</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true" style="top: 50%;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editModalLabel">Editar Placas</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editFormPlacas" method="post" class="edit" autocomplete="off">
+                        <div class="form-group hidden">
+                            <label for="editId">ID</label>
+                            <input type="text" class="form-control" id="editId" name="id" readonly>
+                        </div>
+                        <div class="form-group" style="display: flex; margin-bottom: 0px;">
+                            <div class="form-group" style="margin-right: 5px;">
+                                <label for="editPlaca">Placa</label>
+                                <input type="text" class="form-control" id="editPlaca" name="placa" autocomplete="off" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editVeiculo">Veiculo</label>
+                                <input type="text" class="form-control" id="editVeiculo" name="veiculo" autocomplete="off" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="editKmNeeded">KM Necessário?</label>
+                            <br>
+                            <input type="checkbox" id="editKmNeeded" name="km-needed" autocomplete="off" value="1">
+                        </div>
+                        <div class="form-group" style="display: flex;">
+                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal" style="margin-right: 5px;">Cancelar</button>
+                            <button type="submit" class="btn btn-success">Salvar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true" style="top: 50%;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel">Excluir Registros</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="deleteFormPlacas" action="/processar_formulario" method="post" class="delete" autocomplete="off">
+                        <div class="form-group hidden">
+                            <label for="deleteId">ID</label>
+                            <input type="text" class="form-control" id="deleteId" name="id" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Tem certeza que deseja excluir este registro?</label>
+                        </div>
+                        <div class="form-group" style="display: flex;">
+                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal" style="margin-right: 5px;">Cancelar</button>
+                            <button type="submit" class="btn btn-success">Sim</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% block scripts %}
+    <script>
+        $(document).ready(function () {
+            let table = $('#table-placas').DataTable({
+                ajax: {
+                    url: '/api/placas',
+                },
+                language: {
+                    url: '/pt-BR.json'
+                },
+                columns: [
+                    {data: 'id', visible: false},
+                    {
+                        data: null,
+                        defaultContent: "",
+                        orderable: false,
+                        render: function (data, type, row) {
+                            if ('{{ current_user.is_manager }}' == 'True') {
+                                return "<img src='{{ url_for('static', filename='images/lapis.png') }}' class='edit-images' id='btn-edit' alt='icone_lapis'/>" +
+                                       "<img src='{{ url_for('static', filename='images/lixeira.png') }}' class='edit-images' id='btn-delete' alt='icone_lixeira'/>";
+                            }
+                            return "<img src='{{ url_for('static', filename='images/lapis.png') }}' class='edit-images-disabled' alt='icone_lapis'/>" +
+                                   "<img src='{{ url_for('static', filename='images/lixeira.png') }}' class='edit-images-disabled' alt='icone_lixeira'/>";
+                        }
+                    },
+                    {data: 'placa'},
+                    {data: 'veiculo'},
+                    {data: 'km_necessario', render: function ( data, type, row ) { return data?"<input type='checkbox' checked disabled></input>":"<input type='checkbox' disabled></input>";},}
+                ],
+            });
+
+            $('#table-placas tbody').on('click', '#btn-edit', function () {
+                var data = table.row($(this).parents('tr')).data();
+                $('#editId').val(data.id);
+                $('#editPlaca').val(data.placa);
+                $('#editVeiculo').val(data.veiculo);
+                $('#editKmNeeded').prop('checked' ,data.km_necessario);
+                $('#editModalLabel').text('Editar Placa');
+                $('#editModal').modal('show');
+            });
+
+            $('#table-placas tbody').on('click', '#btn-delete', function () {
+                var data = table.row($(this).parents('tr')).data();
+                $('#deleteId').val(data.id);
+                $('#deleteModal').modal('show');
+            });
+
+            $('#add-placa').on('click', function () {
+                $('#editId').val(null);
+                $('#editPlaca').val(null);
+                $('#editVeiculo').val(null);
+                $('#editKmNeeded').prop('checked' ,false);
+                $('#editModalLabel').text('Cadastrar Placa');
+                $('#editModal').modal('show');
+            });
+
+            $('#reload-table').on('click', function() {
+                table.ajax.reload();
+            });
+
+            $('#editVeiculo').on('input', function() {
+                setupOnlyLetters('editVeiculo');
+            });
+
+            if ('{{ current_user.is_manager }}' == 'False') {
+                $('#cadastrarField').addClass('hidden');
+            };
+
+            setupPlacaInput('editPlaca');
+        });
+    </script>
+{% endblock %}
+{% endblock %}
