@@ -286,8 +286,6 @@ def send_form(form_id):
                 if lanc_mais_prox:
                     collected_data.preco = lanc_mais_prox.preco
 
-        data_to_send.append(collected_data)
-
         return send_data(data_to_send, collected_data, message)
 
     except Exception as e:
