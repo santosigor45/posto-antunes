@@ -17,7 +17,7 @@ def api_data(data):
         search_str = str(search).strip()
         if data == "abastecimentos":
             query = query.filter(db.or_(
-                Abastecimentos.data_reg.icontains(search_str),
+                Abastecimentos.data_lanc.icontains(search_str),
                 Abastecimentos.user.icontains(search_str),
                 Abastecimentos.motorista.icontains(search_str),
                 Abastecimentos.placa.icontains(search_str),
@@ -31,7 +31,7 @@ def api_data(data):
 
         elif data == "entrega_combustivel":
             query = query.filter(db.or_(
-                EntregaCombustivel.data_reg.icontains(search_str),
+                EntregaCombustivel.data_lanc.icontains(search_str),
                 EntregaCombustivel.user.icontains(search_str),
                 EntregaCombustivel.posto.icontains(search_str),
                 EntregaCombustivel.volume.icontains(search_str),
@@ -43,8 +43,8 @@ def api_data(data):
     max_date = request.args.get("maxDate")
     if min_date and max_date:
         query = query.filter(db.and_(
-            db.func.date(table_object(table_name=data).data_reg) >= min_date,
-            db.func.date(table_object(table_name=data).data_reg) <= max_date
+            db.func.date(table_object(table_name=data).data_lanc) >= min_date,
+            db.func.date(table_object(table_name=data).data_lanc) <= max_date
         ))
 
     total_filtered = query.count()
@@ -58,12 +58,12 @@ def api_data(data):
             break
         col_name = request.args.get(f"columns[{col_index}][data]")
         if data == "abastecimentos":
-            if col_name not in ["data_reg", "user", "motorista", "placa", "quilometragem", "volume", "cidade",
+            if col_name not in ["data_lanc", "user", "motorista", "placa", "quilometragem", "volume", "cidade",
                                 "posto", "odometro", "combustivel"]:
                 col_name = "name"
             col = getattr(Abastecimentos, col_name)
         elif data == "entrega_combustivel":
-            if col_name not in ["data_reg", "user", "posto", "volume", "odometro", "preco"]:
+            if col_name not in ["data_lanc", "user", "posto", "volume", "odometro", "preco"]:
                 col_name = "name"
             col = getattr(EntregaCombustivel, col_name)
         descending = request.args.get(f"order[{i}][dir]") == "desc"
