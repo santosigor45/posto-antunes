@@ -8,14 +8,16 @@
     {% include 'flash.html' %}
     <div class="container">
         <div style="display: flex; align-items: center; margin-bottom: 20px;">
-            <img src="{{ url_for('static', filename='images/bomba.png')}}" style="max-width: 30%; height: auto; margin-right: 20px; margin-left: -10px; " alt="Logo" />
+            <img src="{{ url_for('static', filename='images/bomba.png')}}" class="form-img" alt="bomba_de_combustivel"/>
             <h1>Cadastro de abastecimento</h1>
         </div>
+
         <form method="post" id="abastecimentos" class="dados" autocomplete="off">
             <div class="form-group">
                 <label for="data">Data</label>
                 <input type="date" class="form-control" id="data" name="data" required>
             </div>
+
             <div class="form-group">
                 <label for="motorista">Motorista</label>
                 <input type="text" class="form-control" id="motorista" name="motorista" required>
@@ -25,23 +27,28 @@
                     {% endfor %}
                 </div>
             </div>
+
             <div class="form-group">
                 <label for="placa">Placa</label>
-                <input type="text" class="form-control" id="placa" onchange="setTimeout(verificarPlaca, 300)" pattern="[A-z]{3}-\d[A-j0-9]\d{2}" name="placa" maxlength="8" required>
+                <input type="text" class="form-control" id="placa" onchange="setTimeout(validateLicensePlate, 300)"
+                       pattern="[A-z]{3}-\d[A-j0-9]\d{2}" name="placa" maxlength="8" required>
                 <div id="placaOptions" class="dynamic-options">
                     {% for placa in placas %}
                         <div class="dynamic-option">{{ placa.placa }}</div>
                     {% endfor %}
                 </div>
             </div>
+
             <div class="form-group hidden" id="div-observacoes">
                 <label for="observacoes">Observações</label>
                 <input class="form-control" id="observacoes" name="observacoes">
             </div>
+
             <div class="form-group">
                 <label for="quilometragem">Quilometragem</label>
                 <input type="number" class="form-control" id="quilometragem" name="quilometragem" required>
             </div>
+
             <div class="form-group">
                 <label for="cidade">Cidade</label>
                 <select name="cidade" id="cidade" class="form-control" required>
@@ -51,9 +58,10 @@
                     {% endfor %}
                 </select>
             </div>
+
             <div class="form-group">
                 <label for="posto">Posto</label>
-                <select name="posto" id="posto" class="form-control" onchange="verificarNomeDoPosto()" required>
+                <select name="posto" id="posto" class="form-control" onchange="validateStationName()" required>
                     <option disabled selected value="">Selecione um posto</option>
                     <option disabled value="">---- Garagens ----</option>
                     {% for posto in postos if 'BOMBA' in posto.posto %}
@@ -65,14 +73,18 @@
                     {% endfor %}
                 </select>
             </div>
+
             <div class="form-group">
                 <label for="volume">Volume abastecido</label>
-                <input type="text" class="form-control" id="volume" name="volume" pattern="[\d,.]*" maxlength="6" inputmode="numeric" required>
+                <input type="text" class="form-control" id="volume" name="volume" pattern="[\d,.]*" maxlength="8"
+                       inputmode="numeric" required>
             </div>
+
             <div class="form-group hidden" id="div-odometro">
                 <label for="odometro">Odômetro</label>
                 <input type="number" class="form-control" id="odometro" name="odometro">
             </div>
+
             <div class="form-group hidden" id="div-combustivel">
                 <label for="combustivel">Combustível</label>
                 <select name="combustivel" id="combustivel" class="form-control">
@@ -82,15 +94,18 @@
                     <option value="GASOLINA ADT">GASOLINA ADT</option>
                 </select>
             </div>
+
             <div class="form-group hidden" id="div-preco">
                 <label for="preco">Preço do Litro</label>
                 <div class="input-preco">
                     <i>R$</i>
-                    <input type="text" class="form-control" id="preco" name="preco" value="0,00" maxlength="5" pattern="\d,\d{2}" onkeyup="myCurrency(event)" inputmode="numeric">
+                    <input type="text" class="form-control preco" id="preco" name="preco" value="0,00" maxlength="5"
+                           pattern="\d,\d{2}" onkeyup="setupPrecoInput(event)" inputmode="numeric">
                 </div>
             </div>
-            <div class="button-container">
-                <button type="button" class="btn btn-danger btn-lg" id="limpar" onclick="confirmarLimpeza('abastecimentos')">Limpar</button>
+
+            <div class="btn-container">
+                <button type="button" class="btn btn-danger btn-lg" id="limpar" onclick="confirmFormReset('abastecimentos')">Limpar</button>
                 <button type="submit" class="btn btn-success btn-lg" id="enviar-btn" style="margin-left: 5px;">Enviar</button>
             </div>
         </form>

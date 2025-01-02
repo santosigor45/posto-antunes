@@ -69,7 +69,7 @@ async function fetchAssets(event) {
     const cache = await caches.open(CACHE_NAME);
     const request = event.request;
 
-    const exactRoutes = ['/admin', '/logout/', '/ultimos_lancamentos', '/pesquisar']
+    const exactRoutes = ['/admin', '/logout/', '/pesquisar']
                         .map(route => normalizeUrl(location.origin + route));
     const requestUrl = normalizeUrl(request.url);
     const isExactMatch = exactRoutes.includes(requestUrl);

@@ -1,3 +1,6 @@
+/* =========================================
+   Estilos Gerais
+========================================= */
 body {
     background-color: #191745;
 }
@@ -13,87 +16,65 @@ label {
     margin-bottom: 10px;
 }
 
-#btn-abastecimentos:checked ~ .label-abastecimentos,
-#btn-entrega-combustivel:checked ~ .label-entrega-combustivel
-{
-    background-color: #0069D9;
-}
-
-.div-date {
-    width: 400px;
-}
-
-
-.dt-length, .dt-info {
-    text-align: left;
-}
-
-.dt-search {
-    text-align: right;
-}
-
 p {
     margin: 0px;
 }
 
+.hidden {
+    display: none;
+}
+
+/* =========================================
+   Containers
+========================================= */
 .container {
     background-color: #ffffff;
     padding: 20px;
     width: 500px;
     margin: 95px auto 20px auto;
     border: 1px solid #000;
-    border-radius: 10px
-}
-
-.dynamic-options {
-    position: absolute;
-    display: none;
-    max-height: 150px;
-    overflow-y: auto;
-    border: 1px solid #ccc;
-    margin-top: 5px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    border-radius: 4px;
-}
-
-.dynamic-options.show {
-    display: block;
-    background: white;
-}
-
-.dynamic-option {
-    cursor: pointer;
-    padding: 10px;
-    border-bottom: 1px;
-    border-radius: 4px;
-    transition: background-color 0.3s;
-}
-
-.form-group {
-    margin-bottom: 15px;
-    width: 100%;
-}
-
-.form-control {
-    width: 100%;
-    padding: 10px;
-    border-radius: 5px;
-}
-
-.options-container {
-    padding-top: 10px;
-}
-
-.btn {
-    margin: 0;
-    width: 50%;
-    display: inline-block;
+    border-radius: 10px;
 }
 
 .container-fluid {
     overflow-y: auto;
 }
 
+.login-container {
+    background-color: #191745;
+    border: none;
+    margin-bottom: 0;
+}
+
+/* =========================================
+   Imagens
+========================================= */
+.logo {
+    max-width: 100%;
+    height: auto;
+}
+
+.logo-text {
+    max-width: 200px;
+    height: auto;
+}
+
+.form-img {
+    max-width: 30%;
+    height: auto;
+    margin-right: 20px;
+    margin-left: -10px;
+}
+
+.user-icon {
+    height: 30px;
+    width: auto;
+    margin-right: 20px;
+}
+
+/* =========================================
+   Navegação
+========================================= */
 .navbar {
     border-bottom: 3px solid #fff000;
     font-size: 120%;
@@ -118,10 +99,89 @@ p {
     margin-right: 30px;
 }
 
-.hidden {
-    display: none;
+#username-link {
+    padding: 0px;
+    margin-right: 0px;
+    color: white;
+    display: inline;
+    user-select: none;
 }
 
+/* =========================================
+   Buttons
+========================================= */
+.btn {
+    margin: 0;
+    width: 50%;
+    display: inline-block;
+}
+
+.btn-secondary {
+    font-weight: 500;
+    font-size: 15pt;
+}
+
+.btn-container {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.btn-logout {
+    margin-bottom: 5px;
+    margin-top: 5px;
+    margin-left: auto;
+}
+
+.btn-edit {
+    width: 25pt;
+    cursor: pointer;
+}
+
+.btn-disabled {
+    cursor: default;
+    cursor: default;
+    filter: grayscale(1);
+}
+
+#btn-abastecimentos:checked ~ .label-abastecimentos,
+#btn-entrega-combustivel:checked ~ .label-entrega-combustivel {
+    background-color: #0069D9;
+}
+
+/* =========================================
+   Forms
+========================================= */
+.form-group {
+    margin-bottom: 15px;
+    width: 100%;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.div-date {
+    width: 400px;
+}
+
+.dt-length, .dt-info {
+    text-align: left;
+}
+
+.dt-search {
+    text-align: right;
+}
+
+/* =========================================
+   Menus e Submenus
+========================================= */
 .div-menu {
     text-align: center;
 }
@@ -151,17 +211,76 @@ p {
     text-decoration: none;
 }
 
-#welcome_message {
-    font-weight: 900;
-    padding-top: 10px;
+/* =========================================
+   Dynamic Options
+========================================= */
+.dynamic-options {
+    position: absolute;
+    display: none;
+    text-align: left;
+    max-height: 150px;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    margin-top: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
 }
 
-.messages {
-    font-family: "Inconsolata", monospace;
-    font-size: 20px;
-    margin-bottom: 20px;
+.dynamic-options.show {
+    display: block;
+    background: white;
 }
 
+.dynamic-option {
+    cursor: pointer;
+    padding: 10px;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+/* =========================================
+   Tables
+========================================= */
+table {
+    border-collapse: collapse;
+    table-layout: fixed;
+    width: 100%;
+}
+
+.div-table {
+    text-align: center;
+    display: inline-block;
+    margin-top: 0px !important;
+    margin: 30px 5px;
+    max-width: 100%;
+}
+
+th {
+    background-color: gray;
+}
+
+th, td {
+    border: 1px solid black;
+    padding: 10px;
+    text-align: center;
+    word-wrap: break-word;
+}
+
+.row {
+    overflow-y: auto;
+}
+
+.scrollable-table {
+    text-align: center;
+    display: inline-block;
+    overflow-x: auto;
+    margin: 30px auto;
+    max-width: 100%;
+}
+
+/* =========================================
+   Modals
+========================================= */
 .modal {
     display: none;
     position: fixed;
@@ -173,12 +292,12 @@ p {
     transition: opacity 0.2s ease-out;
 }
 
-.modal.show {
-    display: flex;
+.modal-header h5 {
+    font-weight: 600;
 }
 
-.fade-out {
-    opacity: 0;
+.modal.show {
+    display: flex;
 }
 
 .modal-content {
@@ -190,9 +309,15 @@ p {
 
 .modal-body {
     font-family: "Monaco", monospace;
-    font-weight: 600;
 }
 
+.fade-out {
+    opacity: 0;
+}
+
+/* =========================================
+   Flashs
+========================================= */
 .flash-error {
     background-color: #fab3ba;
 }
@@ -217,14 +342,23 @@ p {
     color: #184600;
 }
 
-.logout {
-    margin-bottom: 5px;
+/* =========================================
+   Textos
+========================================= */
+#welcome-message {
+    font-weight: 900;
+    padding-top: 10px;
 }
 
-.login-form {
-    text-align: left;
+.texts {
+    font-family: "Inconsolata", monospace;
+    font-size: 20px;
+    margin-bottom: 20px;
 }
 
+/* =========================================
+   Inputs de Preço
+========================================= */
 #div-preco {
     flex-direction: column;
 }
@@ -245,52 +379,31 @@ p {
     font-style: normal;
 }
 
-#preco {
+.preco {
     padding-left: 25px;
     padding-right: 0px;
 }
 
-table {
-    border-collapse: collapse;
-    table-layout: fixed;
-    width: 100%;
+/* =========================================
+   Estilos Responsivos
+========================================= */
+
+@media (max-width: 1400px) {
+    th, td {
+        padding: 5px;
+        font-size: 12px;
+    }
+
+    .container {
+        width: 95% !important;
+    }
 }
 
-th {
-    background-color: gray;
+@media (max-width: 991px) {
+    table {
+        width: 250% !important;
+    }
 }
-
-th, td {
-    border: 1px solid black;
-    padding: 10px;
-    text-align: center;
-    word-wrap: break-word;
-}
-
-.scrollable-table {
-    text-align: center;
-    display: inline-block;
-    overflow-x: auto;
-    margin: 30px auto;
-    max-width: 100%;
-}
-
-.button-container {
-    margin: 0;
-    padding: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 15px;
-    text-align: center;
-}
-
-.btn-secondary {
-    font-weight: 500;
-    font-size: 15pt;
-}
-
-/* Responsive styles for smaller screens */
 
 @media (max-width: 567px) {
 
@@ -320,7 +433,11 @@ th, td {
     }
 
     table {
-        width: 150%;
+        width: 300% !important;
+    }
+
+    .div-table {
+        margin: 20px auto;
     }
 
     th, td {
@@ -328,4 +445,11 @@ th, td {
         font-size: 12px;
     }
 
+    .dt-length, .dt-info, .dt-search {
+        text-align: left;
+    }
+
+    .dt-length label {
+        font-weight: 300;
+    }
 }

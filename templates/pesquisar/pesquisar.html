@@ -8,15 +8,19 @@
     {% include 'flash.html' %}
     <div class="container" style="width: 50%;">
         <div class="div-menu">
-            <p class="messages">Selecione os dados que deseja visualizar:</p>
-            <div class="button-container">
+            <p class="texts">Selecione os dados que deseja visualizar:</p>
+
+            <div class="btn-container">
                 <input type="radio" class="btn-check" id="btn-abastecimentos" name="table-select" autocomplete="off"/>
-                <label class="btn btn-secondary label-abastecimentos" for="btn-abastecimentos" style="margin-right: 5px;" onclick="window.location = '{{ url_for('views.pesquisar_tables', table='abastecimentos')}}';">
+                <label class="btn btn-secondary label-abastecimentos" for="btn-abastecimentos" style="margin-right: 5px;"
+                       onclick="window.location = '{{ url_for('views.pesquisar_tables', table='abastecimentos')}}';">
                     Abastecimentos
                 </label>
 
                 <input type="radio" class="btn-check" id="btn-entrega-combustivel" name="table-select" autocomplete="off"/>
-                <label class="btn btn-secondary label-entrega-combustivel" for="btn-entrega-combustivel" style="display: flex; margin-right: 5px;" onclick="window.location = '{{ url_for('views.pesquisar_tables', table='entrega_combustivel')}}';">
+                <label class="btn btn-secondary label-entrega-combustivel" for="btn-entrega-combustivel"
+                       style="display: flex; margin-right: 5px;"
+                       onclick="window.location = '{{ url_for('views.pesquisar_tables', table='entrega_combustivel')}}';">
                     <span style="margin: auto;">
                         Entregas
                     </span>

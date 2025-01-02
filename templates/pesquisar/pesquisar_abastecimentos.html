@@ -1,19 +1,19 @@
 {% extends 'base.html' %}
 
 {% block title %}
-    Pesquisar - Veículos da empresa
+    Pesquisar - Abastecimentos
 {% endblock %}
 
 {% block content %}
     {% include 'flash.html' %}
     <div class="container" style="width: 100%;">
         <div class="div-menu">
-            <div class="button-container">
+
+            <div class="btn-container">
                 <input type="radio" class="btn-check" id="btn-abastecimentos" name="table-select" autocomplete="off" checked/>
                 <label class="btn btn-secondary label-abastecimentos" for="btn-abastecimentos" style="margin-right: 5px;" onclick="window.location = '{{ url_for('views.pesquisar_tables', table='abastecimentos')}}';">
                     Abastecimentos
                 </label>
-
                 <input type="radio" class="btn-check" id="btn-entrega-combustivel" name="table-select" autocomplete="off"/>
                 <label class="btn btn-secondary label-entrega-combustivel" for="btn-entrega-combustivel" style="display: flex; margin-right: 5px;" onclick="window.location = '{{ url_for('views.pesquisar_tables', table='entrega_combustivel')}}';">
                     <span style="margin: auto;">
@@ -28,16 +28,18 @@
                 <span class="input-group-text">até</span>
                 <input type="date" class="form-control" id="stop" autocomplete="off">
             </div>
+
             <div class="div-table" id="div-table-abastecimentos">
                 <div class="input-group mb-3 div-date">
                     <button class="btn btn-outline-primary" id="report-button">Imprimir</button>
                 </div>
+
                 <table id="table-abastecimentos" border="1">
                     <thead>
                         <tr>
-<!--                            <th>Editar</th>-->
+                            <th>Editar</th>
                             <th>Data/Hora</th>
-                            <th>Supervisor</th>
+                            <th>Responsável</th>
                             <th>Motorista</th>
                             <th>Placa</th>
                             <th>Observações</th>
@@ -56,75 +58,132 @@
             </div>
         </div>
     </div>
+
+    <!-- modal de edicao -->
     <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true" style="top: 50%;">
         <div class="modal-dialog">
             <div class="modal-content">
+
                 <div class="modal-header">
                     <h5 class="modal-title" id="editModalLabel">Editar Registros</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
+
                 <div class="modal-body">
-                    <form id="editFormRegistros_empresa" action="/processar_formulario" method="post" class="edit" autocomplete="off">
+                    <form id="editFormAbastecimentos" method="post" class="edit" autocomplete="off">
+
                         <div class="form-group hidden">
                             <label for="editId">ID</label>
                             <input type="text" class="form-control" id="editId" name="id" readonly>
                         </div>
-                        <label>Categoria</label>
-                        <div class="button-container">
-                            <input type="radio" class="btn-check" name="categoria" id="entrada" value="entrada" autocomplete="off" required/>
-                            <label class="btn btn-secondary label-entrada" for="entrada" style="margin-right: 5px;">Entrada</label>
 
-                            <input type="radio" class="btn-check" name="categoria" id="saida" value="saida" autocomplete="off"/>
-                            <label class="btn btn-secondary label-saida" for="saida">Saída</label>
-                        </div>
                         <div class="form-group" style="display: flex;">
                             <div class="form-group">
                                 <label for="editData">Data</label>
                                 <input type="date" class="form-control" id="editData" name="data" required>
                             </div>
+
                             <div class="form-group" style="margin-left: 5px;">
                                 <label for="editHora">Hora</label>
                                 <input type="time" class="form-control" id="editHora" name="hora" required>
                             </div>
                         </div>
+
                         <div class="form-group">
                             <label for="editMotorista">Motorista</label>
                             <input type="text" class="form-control" id="editMotorista" name="motorista" autocomplete="off" required>
+                            <div id="motoristaOptions" class="dynamic-options">
+                                {% for motorista in motoristas %}
+                                    <div class="dynamic-option">{{ motorista.motorista }} <b>| {{ motorista.cidade }}</b></div>
+                                {% endfor %}
+                            </div>
                         </div>
+
                         <div class="form-group" style="display: flex; margin-bottom: 0px;">
                             <div class="form-group" style="margin-right: 5px;">
                                 <label for="editPlaca">Placa</label>
-                                <input type="text" class="form-control" id="editPlaca" name="placa" autocomplete="off" required>
+                                <input type="text" class="form-control" id="editPlaca" onchange="setTimeout(validateLicensePlate, 300)"
+                                       pattern="[A-z]{3}-\d[A-j0-9]\d{2}" name="placa" maxlength="8" required>
+                                <div id="placaOptions" class="dynamic-options">
+                                    {% for placa in placas %}
+                                        <div class="dynamic-option">{{ placa.placa }}</div>
+                                    {% endfor %}
+                                </div>
                             </div>
+
                             <div class="form-group">
-                                <label for="editDescricao">Descrição</label>
-                                <input type="text" class="form-control" id="editDescricao" name="descricao" autocomplete="off">
+                                <label for="editObservacoes">Observações</label>
+                                <input type="text" class="form-control" id="editObservacoes" name="observacoes" autocomplete="off">
                             </div>
                         </div>
+
                         <div class="form-group" style="display: flex; margin-bottom: 0px;">
                             <div class="form-group" style="margin-right: 5px;">
                                 <label for="editKm">KM</label>
                                 <input type="number" class="form-control" id="editKm" name="km" autocomplete="off">
                             </div>
+
                             <div class="form-group">
-                                <label for="editDestino">Destino</label>
-                                <select class="form-control" id="editDestino" name="destino" autocomplete="off" required>
-                                    <option value="abastecimento">Abastecimento</option>
-                                    <option value="posto">Posto de combustível</option>
-                                    <option value="manutencao">Manutenção</option>
-                                    <option value="guardar veiculo">Guardar Veículo</option>
-                                    <option value="linha">Linha</option>
-                                    <option value="casa">Casa</option>
-                                    <option value="socorro">Socorro</option>
-                                    <option value="teste">Teste</option>
-                                    <option value="outros">Outros</option>
+                                <label for="editVolume">Volume</label>
+                                <input type="number" class="form-control" id="editVolume" name="volume" autocomplete="off">
+                            </div>
+                        </div>
+
+                        <div class="form-group" style="display: flex; margin-bottom: 0px;">
+                            <div class="form-group" style="margin-right: 5px;">
+                                <label for="editCidade">Cidade</label>
+                                <select name="cidade" id="editCidade" class="form-control" required>
+                                    <option disabled selected value="">Selecione a cidade do veículo</option>
+                                    {% for cidade in cidades %}
+                                        <option>{{ cidade.cidade }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="editPosto">Posto</label>
+                                <select class="form-control" id="editPosto" name="posto" required>
+                                    <option disabled value="">Selecione um posto</option>
+                                    <option disabled value="">---- Garagens ----</option>
+                                    <option disabled hidden value="BOMBA - PINDA 1">BOMBA - PINDA 1</option>
+                                    <option disabled hidden value="BOMBA - PINDA 2">BOMBA - PINDA 2</option>
+                                    {% for posto in postos if 'BOMBA' in posto.posto %}
+                                        <option value="{{ posto.posto }}">{{ posto.posto }}</option>
+                                    {% endfor %}
+                                    <option disabled value="">---- Terceiros ----</option>
+                                    {% for posto in postos if 'BOMBA' not in posto.posto %}
+                                        <option value="{{ posto.posto }}">{{ posto.posto }}</option>
+                                    {% endfor %}
                                 </select>
                             </div>
                         </div>
-                        <div class="form-group">
-                            <label for="editObs">Observações</label>
-                            <input type="text" class="form-control" id="editObs" name="obs" autocomplete="off">
+
+                        <div class="form-group" style="display: flex; margin-bottom: 0px;">
+                            <div class="form-group" style="margin-right: 5px;">
+                                <label for="editOdometro">Odômetro</label>
+                                <input type="number" class="form-control" id="editOdometro" name="odometro">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="editCombustivel">Combustível</label>
+                                <select name="combustivel" id="editCombustivel" class="form-control">
+                                    <option disabled selected value="">Selecione o combustível</option>
+                                    <option value="DIESEL S-10">DIESEL S-10</option>
+                                    <option value="GASOLINA">GASOLINA</option>
+                                    <option value="GASOLINA ADT">GASOLINA ADT</option>
+                                </select>
+                            </div>
                         </div>
+
+                        <div class="form-group" id="div-preco" style="display: flex;">
+                            <label for="editPreco">Preço do Litro</label>
+                            <div class="input-preco">
+                                <i>R$</i>
+                                <input type="text" class="form-control preco" id="editPreco" name="preco" value="0,00" maxlength="5"
+                                       pattern="\d,\d{2}" onkeyup="setupPrecoInput(event, 'editPreco')" inputmode="numeric">
+                            </div>
+                        </div>
+
                         <div class="form-group" style="display: flex;">
                             <button type="button" class="btn btn-danger" data-bs-dismiss="modal" style="margin-right: 5px;">Cancelar</button>
                             <button type="submit" class="btn btn-success">Salvar</button>
@@ -134,6 +193,8 @@
             </div>
         </div>
     </div>
+
+    <!-- modal de exclusao -->
     <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true" style="top: 50%;">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -159,144 +220,8 @@
             </div>
         </div>
     </div>
-{% block scripts %}
-    <script>
-        $(document).ready(function () {
-            $.fn.dataTable.moment('DD/MM/YYYY HH:mm:ss');
-            let table = $('#table-abastecimentos').DataTable({
-                lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "Todos"]],
-                ajax: {
-                    url: '/api/abastecimentos',
-                    data: function(dtParms) {
-                        dtParms.minDate = $('#start').val();
-                        dtParms.maxDate = $('#stop').val();
-                        return dtParms
-                    },
-                },
-                order: [[0, 'desc']],
-                processing: true,
-                serverSide: true,
-                language: {
-                    url: '/pt-BR.json'
-                },
-                columns: [
-                    {
-                        data: 'data_lanc',
-                        render: function (data, type, row) {
-                            if (type === 'display' || type === 'filter') {
-                                return moment.utc(data).format('LLLL');
-                            }
-                            return data;
-                        }
-                    },
-                    {data: 'user'},
-                    {data: 'motorista'},
-                    {data: 'placa'},
-                    {data: 'observacoes'},
-                    {data: 'quilometragem', orderable: false},
-                    {data: 'volume'},
-                    {data: 'cidade'},
-                    {data: 'posto'},
-                    {data: 'odometro'},
-                    {data: 'combustivel'},
-                    {data: 'preco'},
-                ],
-            });
 
-            function formatDateToBrazilian(dateStr) {
-                if (!dateStr) return '';
-
-                let dateObj = new Date(dateStr);
-                let day = String(dateObj.getDate()).padStart(2, '0');
-                let month = String(dateObj.getMonth() + 1).padStart(2, '0');
-                let year = dateObj.getFullYear();
-
-                return `${day}/${month}/${year}`;
-            }
-
-            $('#report-button').on('click', function() {
-                let searchTerm = table.search();
-                let startDate = formatDateToBrazilian($('#start').val());
-                let endDate = formatDateToBrazilian($('#stop').val());
-
-                let reportTitle = 'Todos os Lançamentos';
-
-                if (startDate && endDate) {
-                    if (startDate == endDate) {
-                        reportTitle = `Relatório do dia ${startDate}`;
-                    } else {
-                        reportTitle = `Relatório de ${startDate} até ${endDate}`;
-                    }
-                }
-
-                if (searchTerm !== '') {
-                    reportTitle += ` (Busca: ${searchTerm})`;
-                }
-
-                if (!searchTerm && (!startDate || !endDate)) {
-                    let userConfirmed = confirm("Nenhum filtro selecionado. Isso irá imprimir todos os lançamentos existentes e pode demorar alguns minutos. Você tem certeza?");
-
-                    if (!userConfirmed) {
-                        return;
-                    }
-                }
-
-                let currentPageLength = table.page.len();
-
-                table.page.len(-1).draw();
-
-                table.one('draw', function() {
-                    table.buttons().destroy();
-                    new $.fn.dataTable.Buttons(table, {
-                        buttons: [
-                            {
-                                extend: 'print',
-                                title: reportTitle,
-                                exportOptions: {
-                                    columns: ':not(:first-child)'
-                                },
-                            }
-                        ]
-                    });
-
-                    table.button(0).trigger();
-
-                    setTimeout(function() {
-                        table.page.len(currentPageLength).draw();
-                    }, 500);
-                });
-            });
-
-            $('#start, #stop').on('change', function() {
-                table.draw();
-            });
-
-            $('#table-abastecimentos tbody').on('click', '#btn-edit', function () {
-                var data = table.row($(this).parents('tr')).data();
-                var dateTime = new Date(data.data_reg);
-
-                $('#editId').val(data.id);
-                $('#' + data.categoria).prop('checked' ,true);
-                $('#editData').val(dateTime.toISOString().split( "T" )[0]);
-                $('#editHora').val(dateTime.toISOString().split( "T" )[1].slice(0, -8));
-                $('#editMotorista').val(data.motorista);
-                $('#editPlaca').val(data.placa);
-                $('#editDescricao').val(data.descricao);
-                $('#editKm').val(data.quilometragem);
-                $('#editDestino').val(data.destino);
-                $('#editObs').val(data.observacoes);
-                $('#editModal').modal('show');
-            });
-
-            $('#table-abastecimentos tbody').on('click', '#btn-delete', function () {
-                var data = table.row($(this).parents('tr')).data();
-                $('#deleteId').val(data.id);
-                $('#deleteModal').modal('show');
-            });
-
-            setupPlacaInput('editPlaca');
-            setupMotoristaInput('editMotorista');
-        });
-    </script>
 {% endblock %}
+{% block scripts %}
+    <script src="{{ url_for('static', filename='js/datatables/pesquisar-abastecimentos.js') }}"></script>
 {% endblock %}

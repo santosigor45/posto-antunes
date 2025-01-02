@@ -87,7 +87,7 @@ class Abastecimentos(db.Model):
     placa = db.Column(db.String(10), nullable=False)
     observacoes = db.Column(db.String(100))
     quilometragem = db.Column(db.Integer)
-    volume = db.Column(db.DECIMAL(3, 3), nullable=False)
+    volume = db.Column(db.DECIMAL(7, 3), nullable=False)
     cidade = db.Column(db.String(30), nullable=False)
     posto = db.Column(db.String(30), nullable=False)
     odometro = db.Column(db.Integer)

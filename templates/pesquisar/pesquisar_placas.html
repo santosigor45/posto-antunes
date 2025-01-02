@@ -9,7 +9,7 @@
     <div class="container" style="width: 70%;">
         <button class="hidden" id="reload-table"></button>
         <div class="div-menu">
-            <div class="button-container">
+            <div class="btn-container">
                 <input type="radio" class="btn-check" id="btn-motoristas" name="table-select" autocomplete="off"/>
                 <label class="btn btn-secondary label-motoristas" for="btn-motoristas" style="display: flex; margin-right: 5px;" onclick="window.location = '{{ url_for('views.pesquisar_tables', table='motoristas')}}';">
                     <span style="margin: auto;">
@@ -112,7 +112,7 @@
         $(document).ready(function () {
             let table = $('#table-placas').DataTable({
                 ajax: {
-                    url: '/api/placas',
+                    url: '/api/api_data/placas',
                 },
                 language: {
                     url: '/pt-BR.json'

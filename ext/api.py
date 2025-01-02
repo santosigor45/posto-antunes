@@ -1,5 +1,7 @@
-from flask import request
-from models import *
+from flask import request, jsonify, abort
+from ext.utils import determine_pump
+from flask_login import current_user
+from models import db, Abastecimentos, EntregaCombustivel, table_object
 
 
 def api_data(data):
@@ -9,6 +11,19 @@ def api_data(data):
         }
 
     query = db.session.query(table_object(table_name=data))
+
+    # date range filter
+    min_date = request.args.get("minDate")
+    max_date = request.args.get("maxDate")
+    if min_date and max_date:
+        query = query.filter(db.and_(
+            db.func.date(table_object(table_name=data).data_lanc) >= min_date,
+            db.func.date(table_object(table_name=data).data_lanc) <= max_date
+        ))
+
+    # user filter
+    if not (current_user.is_admin or current_user.is_manager):
+        query = query.filter_by(user=current_user.username)
 
     # search filter
     search = request.args.get("search[value]")
@@ -37,15 +52,6 @@ def api_data(data):
                 EntregaCombustivel.volume.icontains(search_str),
                 EntregaCombustivel.preco.icontains(search_str)
             ))
-
-    # date range filter
-    min_date = request.args.get("minDate")
-    max_date = request.args.get("maxDate")
-    if min_date and max_date:
-        query = query.filter(db.and_(
-            db.func.date(table_object(table_name=data).data_lanc) >= min_date,
-            db.func.date(table_object(table_name=data).data_lanc) <= max_date
-        ))
 
     total_filtered = query.count()
 
@@ -90,3 +96,58 @@ def api_data(data):
         "recordsTotal": query.count(),
         "draw": request.args.get("draw", type=int),
     }
+
+
+def validate_mileage(placa, km):
+    try:
+        query = Abastecimentos.query.filter_by(placa=placa).order_by(
+            Abastecimentos.id.desc()).first()
+
+        if query:
+            result = (query.quilometragem + 3000) > int(km) > query.quilometragem
+
+            if result:
+                message = "Ok!"
+                return jsonify({'message': f'{message}', 'result': result})
+            else:
+                message = "Por favor, verifique se o KM digitado está correto!"
+                return jsonify({'message': f'{message}', 'result': result})
+
+        else:
+            message = "Nenhum registro encontrado!"
+            return jsonify({'message': f'{message}', 'result': True})
+
+    except Exception as e:
+        abort(500, description=str(e))
+
+
+def validate_odometer(posto, odometro, form_id):
+    try:
+        posto = determine_pump(odometro) if posto == "BOMBA - PINDA" else posto
+        query = None
+
+        if form_id == "abastecimentos":
+            query = Abastecimentos.query.filter_by(posto=posto).order_by(
+                Abastecimentos.id.desc()).first()
+
+        elif form_id == "entrega_combustivel":
+            query = EntregaCombustivel.query.filter_by(posto=posto).order_by(
+                EntregaCombustivel.id.desc()).first()
+
+        if query:
+            result = (query.odometro + 3000) > int(odometro) > query.odometro
+
+            if result:
+                message = "Ok!"
+                return jsonify({'message': f'{message}', 'result': result})
+
+            else:
+                message = "Por favor, verifique se o odômetro digitado está correto!"
+                return jsonify({'message': f'{message}', 'result': result})
+
+        else:
+            message = "Nenhum registro encontrado!"
+            return jsonify({'message': f'{message}', 'result': True})
+
+    except Exception as e:
+        abort(500, description=str(e))

@@ -1,6 +1,7 @@
 from flask import request, jsonify
 from flask_login import current_user
-from models import *
+from models import db, PontoVirada, VolumeAtual, Abastecimentos, EntregaCombustivel
+from ext.utils import determine_pump
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
@@ -19,7 +20,11 @@ def send_data(data_to_send, collected_data, message):
 
     except Exception as e:
         db.session.rollback()
-        return jsonify({'type': 'error', 'message': 'db error:' + str(e)})
+        return jsonify({
+            'type': 'error',
+            'message': 'Ocorreu um erro, por favor contate o administrador.',
+            'error': 'db error:' + str(e)
+        })
 
 
 def edit_form(form_id):
@@ -178,7 +183,7 @@ def delete_form(form_id):
     #     return jsonify({'type': 'error', 'message': 'function error:' + str(e)})
 
 
-def send_form(form_id):
+def process_form(form_id):
     try:
         data_to_send = []
         collected_data = None
@@ -217,31 +222,12 @@ def send_form(form_id):
         if "BOMBA" in collected_data.posto:
             odometro_atual = int(collected_data.odometro)
 
-            if collected_data.posto == "BOMBA - PINDA":
-                menor_diferenca = None
-                odometro_posto = {}
-                # Check for closest odometer reading at specific pumps
-                for bomba in ["BOMBA - PINDA 1", "BOMBA - PINDA 2"]:
-                    resultado = EntregaCombustivel.query.filter_by(posto=bomba).filter(
-                        EntregaCombustivel.odometro <= odometro_atual).order_by(
-                        EntregaCombustivel.odometro.desc()).first()
-                    if resultado:
-                        odometro_posto[bomba] = int(resultado.odometro)
-
-                if odometro_posto:
-                    # Determine the pump with the smallest difference in odometer readings
-                    if len(odometro_posto) == 2:
-                        diferenca = {}
-                        print(odometro_posto)
-                        for od in odometro_posto:
-                            diferenca[od] = odometro_atual - odometro_posto[od]
-
-                        menor_diferenca = min(diferenca, key=diferenca.get)
-
-                    elif len(odometro_posto) == 1:
-                        menor_diferenca = next(iter(odometro_posto.keys()))
-
-                    collected_data.posto = menor_diferenca
+            # atraves do odometro, determina a qual posto de pinda o abastecimento pertence
+            collected_data.posto = (
+                determine_pump(odometro_atual)
+                if collected_data.posto == "BOMBA - PINDA"
+                else collected_data.posto
+            )
 
             # Handle delivery or fueling based on form ID
             if form_id == "entrega_combustivel":
@@ -289,4 +275,8 @@ def send_form(form_id):
         return send_data(data_to_send, collected_data, message)
 
     except Exception as e:
-        return jsonify({'type': 'error', 'message': 'function error:' + str(e)})
+        return jsonify({
+            'type': 'error',
+            'message': 'Ocorreu um erro, por favor contate o administrador.',
+            'error': 'function error:' + str(e)
+        })

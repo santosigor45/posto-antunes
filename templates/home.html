@@ -8,14 +8,16 @@
     {% include 'flash.html' %}
     <div class="container" style="padding: 10px;">
         <div class="div-menu">
-            <p class="messages" id="welcome_message">{{ current_user.username|upper }}!</p>
-            <p class="messages">Selecione abaixo a opção desejada:</p>
+            <p class="texts" id="welcome-message">{{ current_user.username|upper }}!</p>
+            <p class="texts">Selecione abaixo a opção desejada:</p>
+
             <div class="div-submenu" style="margin-right: 5px;">
                 <a href="{{ url_for('views.abastecimentos')}}" class="div-menu-item">
                     <img src="{{ url_for('static', filename='images/bomba.png')}}" style="max-width: 80%; height: auto;  margin-bottom: 10px;" alt="logo_bomba" />
                     <p class="div-submenu-text">Novo <br>abastecimento</p>
                 </a>
             </div>
+
             <div class="div-submenu">
                 <a href="{{ url_for('views.entrega_combustivel')}}" class="div-menu-item">
                     <img src="{{ url_for('static', filename='images/caminhao.png')}}" style="max-width: 80%; height: auto; margin-bottom: 10px;" alt="logo_caminhao" />
@@ -24,6 +26,8 @@
             </div>
         </div>
     </div>
+
+    <!-- registra o service worker na pagina inicial -->
     <script>
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('/service-worker.js')
