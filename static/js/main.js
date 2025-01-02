@@ -12,7 +12,6 @@ document.addEventListener('DOMContentLoaded', function () {
     setupPlacaInput();
     sendCachedData();
     adminLoader();
-    managerLoader();
     setupSendButtonBehavior();
 
     // adiciona event listeners de foco para todos os inputs, ativando a função scrollToView
@@ -275,6 +274,10 @@ function setupMotoristaOptions(field) {
  */
 function setupPlacaInput(field = 'placa') {
     var placa = document.getElementById(field);
+
+    if (!placa) {
+        return
+    }
 
     placa.addEventListener('input', function() {
         placa.value = placa.value.toUpperCase();
