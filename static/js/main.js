@@ -235,6 +235,10 @@ function updateDate() {
 function setupMotoristaInput(field = 'motorista') {
     var motorista = document.getElementById(field);
 
+    if (!motorista) {
+        return
+    }
+
     motorista.addEventListener('input', function() {
         setupOnlyLetters(field);
     });
