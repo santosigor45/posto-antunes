@@ -125,6 +125,7 @@ def validate_odometer(posto, odometro, form_id):
     try:
         posto = determine_pump(odometro) if posto == "BOMBA - PINDA" else posto
         query = None
+        max_range = 3000
 
         if form_id == "abastecimentos":
             query = Abastecimentos.query.filter_by(posto=posto).order_by(
@@ -133,9 +134,10 @@ def validate_odometer(posto, odometro, form_id):
         elif form_id == "entrega_combustivel":
             query = EntregaCombustivel.query.filter_by(posto=posto).order_by(
                 EntregaCombustivel.id.desc()).first()
+            max_range = 10000
 
         if query:
-            result = (query.odometro + 3000) > int(odometro) > query.odometro
+            result = (query.odometro + max_range) > int(odometro) > query.odometro
 
             if result:
                 message = "Ok!"
