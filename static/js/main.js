@@ -1,17 +1,13 @@
-/**
- * Dispara quando o DOM estiver completamente carregado.
- * Inicializa diversas funcionalidades da página.
- */
+// dispara quando o DOM estiver completamente carregado
 document.addEventListener('DOMContentLoaded', function () {
     updateDate();
+    adminLoader();
     highlightActiveNavbarItem();
     showModal();
     showCustomMessage();
     setupFormListeners();
     setupMotoristaInput();
     setupPlacaInput();
-    sendCachedData();
-    adminLoader();
     setupSendButtonBehavior();
 
     // adiciona event listeners de foco para todos os inputs, ativando a função scrollToView
@@ -21,12 +17,10 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 /*************************************************************/
-/*                   ENVIO DE FORMULÁRIO                     */
+/*                   ENVIO DE FORMULARIO                     */
 /*************************************************************/
 
-/**
- * Inicializa listeners em todos os formulários (edit, delete, dados).
- */
+// inicializa listeners em todos os formulários (edit, delete, dados)
 function setupFormListeners() {
     document.querySelectorAll('form.edit, form.delete, form.dados').forEach(function (form) {
         form.addEventListener('submit', async function (event) {
@@ -54,9 +48,8 @@ function setupFormListeners() {
     });
 }
 
-/**
- * Envia dados do formulário ao servidor e lida com a resposta.
- */
+
+// envia dados do formulário ao servidor e lida com a resposta
 function submitFormData(url, formData, form, formId) {
     sendDataToServer(url, formData, form.getAttribute('method'))
         .then(({ message, type, error }) => {
@@ -83,9 +76,8 @@ function submitFormData(url, formData, form, formId) {
         });
 }
 
-/**
- * Requisição genérica ao servidor, usando fetch.
- */
+
+// requisicao generica ao servidor, usando fetch
 function sendDataToServer(url, formData, method = 'POST') {
     if (method === 'GET') {
         return fetch(url, { method }).then((response) => response.json());
@@ -93,14 +85,11 @@ function sendDataToServer(url, formData, method = 'POST') {
     return fetch(url, { method, body: formData }).then((response) => response.json());
 }
 
-
 /*************************************************************/
 /*               CONFIGURAÇÕES DE FORMULÁRIO                 */
 /*************************************************************/
 
-/**
- * Atualiza o campo de data para a data atual no formato ISO (yyyy-mm-dd).
- */
+// atualiza o campo de data para a data atual no formato ISO (yyyy-mm-dd)
 function updateDate() {
     var today = new Date();
     var offset = today.getTimezoneOffset() * 60000;
@@ -111,9 +100,8 @@ function updateDate() {
     }
 }
 
-/**
- * Configura campo de input para motorista, exibindo opções filtradas.
- */
+
+// configura campo de input para motorista, exibindo opções filtradas
 function setupMotoristaInput(field = 'motorista') {
     var motorista = document.getElementById(field);
 
@@ -142,7 +130,7 @@ function setupMotoristaOptions(field) {
         var valorAtual = motorista.value;
         motoristaOptions.innerHTML = '';
 
-        filterAndDisplayOptions(valorAtual, all_motoristas, motorista, motoristaOptions);
+        displayOptions(valorAtual, all_motoristas, motorista, motoristaOptions);
     });
 
     motorista.addEventListener('blur', function() {
@@ -152,9 +140,8 @@ function setupMotoristaOptions(field) {
     });
 }
 
-/**
- * Configura campo de input para placa, exibindo opções filtradas e formatando a digitação.
- */
+
+// configura campo de input para placa, exibindo opções filtradas e formatando a digitacao
 function setupPlacaInput(field = 'placa') {
     var placa = document.getElementById(field);
 
@@ -184,7 +171,7 @@ function setupPlacaOptions(field) {
         var valorAtual = placa.value;
         placaOptions.innerHTML = '';
 
-        filterAndDisplayOptions(valorAtual, all_placas, placa, placaOptions);
+        displayOptions(valorAtual, all_placas, placa, placaOptions);
     });
 
     placa.addEventListener('blur', function() {
@@ -225,9 +212,8 @@ function setupPlacaPattern(field) {
     });
 }
 
-/**
- * Formata valor monetário no campo de preço.
- */
+
+// formata valor monetario no campo de preco
 function setupPrecoInput(e, field = 'preco') {
     var x = document.getElementById(field);
     var currentVal = x.value;
@@ -249,10 +235,9 @@ function setupPrecoInput(e, field = 'preco') {
     }
 }
 
-/**
- * Filtra opções e exibe na tela, baseado no valor atual do input.
- */
-function filterAndDisplayOptions(valorAtual, allOptions, inputField, optionsContainer) {
+
+// filtra as opcoes e exibe na tela, baseado no valor atual do input
+function displayOptions(valorAtual, allOptions, inputField, optionsContainer) {
     optionsContainer.innerHTML = '';
 
     if (valorAtual.length === 0) {
@@ -288,10 +273,8 @@ function filterAndDisplayOptions(valorAtual, allOptions, inputField, optionsCont
     optionsContainer.classList.add('show');
 }
 
-/**
- * Desabilita o botão de envio por um curto período para evitar envios duplicados.
- * Habilita novamente sempre que qualquer campo for alterado.
- */
+
+// desabilita o botao de envio por um curto período para evitar envios duplicados
 function setupSendButtonBehavior() {
     const submitButton = document.getElementById('enviar-btn');
     const formFields = document.querySelectorAll('input, select');
@@ -315,9 +298,7 @@ function setupSendButtonBehavior() {
 /*                VERIFICAÇÕES DE FORMULÁRIO                 */
 /*************************************************************/
 
-/**
- * Verifica a quilometragem inserida de forma assíncrona.
- */
+// verifica a quilometragem inserida de forma assincrona
 async function validateMileage() {
     const placa = document.getElementById('placa').value;
     const kmField = document.getElementById('quilometragem');
@@ -356,9 +337,8 @@ async function validateMileage() {
     }
 }
 
-/**
- * Verifica o odômetro inserido de forma assíncrona.
- */
+
+// verifica o odômetro inserido de forma assincrona
 async function validateOdometer(formID) {
     const posto = document.getElementById('posto').value;
 
@@ -397,9 +377,8 @@ async function validateOdometer(formID) {
     }
 }
 
-/**
- * Ajusta campo de preço, combustível e odômetro dependendo do posto selecionado.
- */
+
+// ajusta campo de preco, combustivel e odometro dependendo do posto selecionado
 function validateStationName() {
     var valorSelecionado = document.getElementById("posto").value;
 
@@ -420,9 +399,8 @@ function validateStationName() {
     }
 }
 
-/**
- * Formata o texto digitado em um campo de placa (AAA-0A00).
- */
+
+// formata o texto digitado em um campo de placa (AAA-0A00)
 function validateLicensePlate() {
     var placaElement = document.getElementById("placa");
     var kmElement = document.getElementById("quilometragem");
@@ -441,14 +419,11 @@ function validateLicensePlate() {
     }
 }
 
-
 /*************************************************************/
 /*                        ESTÉTICA                           */
 /*************************************************************/
 
-/**
- * Faz a rolagem suave até o elemento focado após um leve atraso.
- */
+// faz a rolagem suave ate o elemento focado com um atraso
 function scrollToView(event) {
     var activeElement = event.target;
     setTimeout(() => {
@@ -456,9 +431,8 @@ function scrollToView(event) {
     }, 300);
 }
 
-/**
- * Destaca o item do navbar correspondente à URL atual.
- */
+
+// destaca o item do navbar correspondente a URL atual
 function highlightActiveNavbarItem() {
     let currentUrl = window.location.href;
     let navbarItems = document.querySelectorAll(".navbar-nav .nav-link");
@@ -469,9 +443,8 @@ function highlightActiveNavbarItem() {
     })
 }
 
-/**
- * Exibe saudação personalizada (Bom dia, Boa tarde, Boa noite).
- */
+
+// exibe saudacao personalizada (bom dia, boa tarde, boa noite)
 function showCustomMessage() {
     var agora = new Date();
     var hora = agora.getHours();
@@ -486,9 +459,7 @@ function showCustomMessage() {
 /*                        MODALS                             */
 /*************************************************************/
 
-/**
- * Exibe modal se houver mensagens de flash no HTML (classe .flashes).
- */
+// abre o modal
 function showModal() {
     var modal = document.getElementById('myModal');
     var flashes = document.querySelector('.flashes');
@@ -505,9 +476,8 @@ function showModal() {
     }
 }
 
-/**
- * Fecha modal aplicando efeito de fade-out.
- */
+
+// fecha o modal
 function closeModal(modal_id) {
     var modal = document.getElementById(modal_id);
     modal.classList.add('fade-out');
@@ -516,9 +486,8 @@ function closeModal(modal_id) {
     }, 200);
 }
 
-/**
- * Exibe mensagem flash em um modal específico (jsModal), e fecha após 3s.
- */
+
+// gerencia mensagens flash em uma modal
 function showFlashMessage(mensagem, tipo) {
     var modal = document.getElementById('jsModal');
     modal.classList.add('show');
@@ -543,9 +512,7 @@ function showFlashMessage(mensagem, tipo) {
 /*                       PERMISSÕES                          */
 /*************************************************************/
 
-/**
- * Ajusta UI de links específicos se o usuário for administrador.
- */
+// ajusta UI de links específicos se o usuário for administrador
 function adminLoader() {
     var userContainer = document.getElementById('username-link')
     if (typeof isAdmin !== 'undefined' && isAdmin) {
@@ -559,18 +526,15 @@ function adminLoader() {
 /*                        UTILIDADES                         */
 /*************************************************************/
 
-/**
- * Verifica disponibilidade do servidor através da rota /ping.
- */
+// verifica disponibilidade do servidor atraves da rota /ping
 function checkServerAvailability() {
     return fetch('/ping')
         .then(response => response.ok ? true : false)
         .catch(() => false);
 }
 
-/**
- * Converte um objeto FormData para um objeto JS simples (key-value).
- */
+
+// converte um objeto FormData para um objeto JS simples (key-value)
 function formDataToObject(formData) {
     var formDataObject = {};
     formData.forEach(function(value, key){
@@ -579,9 +543,8 @@ function formDataToObject(formData) {
     return formDataObject;
 }
 
-/**
- * Exibe caixa de diálogo de confirmação para limpeza de formulário.
- */
+
+// exibe caixa de dialogo de confirmacao para limpeza de formulario
 function confirmFormReset(form) {
     var confirmar = confirm("Tem certeza que deseja limpar tudo?");
     if (confirmar) {
@@ -589,18 +552,16 @@ function confirmFormReset(form) {
     }
 }
 
-/**
- * Reseta o formulário e atualiza a data para o dia atual.
- */
+
+// reseta o formulario e atualiza a data para o dia atual
 function formReset(form) {
     var formulario = document.getElementById(form);
     formulario.reset();
     updateDate();
 }
 
-/**
- * funcao generica que formata apenas com letras
- */
+
+// funcao generica que formata o input apenas com letras
 function setupOnlyLetters(idElement) {
     element = document.getElementById(idElement);
     element.value = element.value.toUpperCase().replace(/[0-9]/g, '');
