@@ -74,12 +74,10 @@ function submitFormData(url, formData, form, formId) {
         })
         .catch(error => {
             if (url.includes('send')) {
-                saveToIndexedDB({ url: url, data: formDataToObject(formData) });
-                showFlashMessage('Dados armazenados. Eles serão enviados quando a conexão for restabelecida.', 'info');
-                formReset(formId);
+                showFlashMessage('Houve um erro. Por favor, verifique a conexão e tente novamente.', 'info');
             } else {
                 $('.modal').modal('hide');
-                showFlashMessage('Ocorreu um erro. Tente novamente mais tarde', 'error');
+                showFlashMessage('Houve um erro. Por favor, verifique a conexão e tente novamente.', 'error');
             }
             console.log(error);
         });
@@ -93,121 +91,6 @@ function sendDataToServer(url, formData, method = 'POST') {
         return fetch(url, { method }).then((response) => response.json());
     }
     return fetch(url, { method, body: formData }).then((response) => response.json());
-}
-
-
-/*************************************************************/
-/*                     CACHE OFFLINE                         */
-/*************************************************************/
-/**
- * Abre ou cria o banco IndexedDB para salvar dados offline.
- */
-function openIndexedDB() {
-    return new Promise((resolve, reject) => {
-        var request = indexedDB.open("formularioDB", 1);
-        request.onupgradeneeded = function (event) {
-            var db = event.target.result;
-            if (!db.objectStoreNames.contains("formularioStore")) {
-                db.createObjectStore("formularioStore", { keyPath: "id", autoIncrement: true });
-            }
-        };
-        request.onsuccess = function (event) {
-            resolve(event.target.result);
-        };
-
-        request.onerror = function (event) {
-            reject("Erro ao abrir o banco de dados: " + event.target.errorCode);
-        };
-    });
-}
-
-/**
- * Salva dados não enviados no IndexedDB.
- */
-function saveToIndexedDB(data) {
-    openIndexedDB()
-        .then(db => {
-            var transaction = db.transaction(["formularioStore"], "readwrite");
-            var objectStore = transaction.objectStore("formularioStore");
-            objectStore.add(data);
-            return transaction.complete;
-        })
-        .then(() => console.log('Dados salvos no IndexedDB com sucesso.'))
-        .catch(error => console.error('Erro ao salvar no IndexedDB:', error));
-}
-
-/**
- * Tenta enviar dados em cache do IndexedDB para o servidor.
- */
-function sendCachedData() {
-    openIndexedDB()
-        .then(db => {
-            return new Promise((resolve, reject) => {
-                var objectStore = db.transaction(["formularioStore"], "readwrite").objectStore("formularioStore");
-                var request = objectStore.getAll();
-
-                request.onsuccess = function(event) {
-                    resolve(event.target.result);
-                };
-
-                request.onerror = function(event) {
-                    reject("Erro ao obter dados em cache: " + event.target.errorCode);
-                };
-            });
-        })
-        .then(cachedData => {
-            if (cachedData && cachedData.length > 0) {
-                checkServerAvailability()
-                    .then(serverAvailable => {
-                        if (serverAvailable) {
-                            sendCachedDataRecursiveStep(cachedData, 0);
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Erro ao verificar a disponibilidade do servidor:', error);
-                    });
-            }
-        })
-        .catch(error => console.error('Erro ao enviar dados em cache:', error));
-}
-
-/**
- * Função recursiva para enviar cada item de dados em cache ao servidor.
- */
-function sendCachedDataRecursiveStep(cachedData, index) {
-    if (index < cachedData.length) {
-        var item = cachedData[index];
-        var formData = new FormData();
-
-        for (var key in item.data) {
-            formData.append(key, item.data[key]);
-        }
-
-        formData.append('formulario_id', item.formulario_id);
-
-        sendDataToServer(item.url, formData)
-            .then(({ message, type, error }) => {
-                showFlashMessage(message, type);
-
-                if (error){
-                    console.log(error);
-                }
-
-                return openIndexedDB();
-            })
-            .then(db => {
-                var transaction = db.transaction(["formularioStore"], "readwrite");
-                var objectStore = transaction.objectStore("formularioStore");
-                objectStore.delete(item.id);
-                return transaction.complete;
-            })
-            .then(() => {
-                sendCachedDataRecursiveStep(cachedData, index + 1);
-            })
-            .catch(error => {
-                showFlashMessage(error.message, 'error');
-            });
-    }
 }
 
 
