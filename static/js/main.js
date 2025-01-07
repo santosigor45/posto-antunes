@@ -283,13 +283,13 @@ function setupSendButtonBehavior() {
 
     submitButton.addEventListener('click', () => {
         setTimeout(() => {
-            submitButton.disabled = true;
+            addRemoveDisabled(['enviar-btn'], ['add']);
         }, 100);
     });
 
     formFields.forEach((field) => {
         field.addEventListener('input', () => {
-            submitButton.disabled = false;
+            addRemoveDisabled(['enviar-btn'], ['remove']);
         });
     });
 }
@@ -298,12 +298,31 @@ function setupSendButtonBehavior() {
 /*                VERIFICAÇÕES DE FORMULÁRIO                 */
 /*************************************************************/
 
+// variaveis permanentes para armazenar o ultimo par de placa e quilometragem e o contador
+let lastPlaca = null;
+let lastKm = null;
+let contadorMileage = 0;
+
 // verifica a quilometragem inserida de forma assincrona
 async function validateMileage() {
-    const placa = document.getElementById('placa').value;
+    const placa = document.getElementById('placa').value.trim();
     const kmField = document.getElementById('quilometragem');
+    const km = kmField.value.trim();
 
     if (placa === 'SEM-PLACA') {
+        return true;
+    }
+
+    const isSamePair = (placa === lastPlaca) && (km === lastKm);
+
+    if (!isSamePair) {
+        lastPlaca = placa;
+        lastKm = km;
+        contadorMileage = 0;
+    }
+
+    if (isSamePair && contadorMileage > 1) {
+        console.log('Validação ignorada. Liberando envio automaticamente.');
         return true;
     }
 
@@ -312,23 +331,35 @@ async function validateMileage() {
         if (serverAvailable) {
             try {
                 const { message, result } = await sendDataToServer(
-                    '/api/validate_mileage/' + placa + '/' + kmField.value,
+                    `/api/validate_mileage/${encodeURIComponent(placa)}/${encodeURIComponent(km)}`,
                     null,
                     'GET'
                 );
+
                 if (!result) {
+                    contadorMileage++;
+
+                    if (contadorMileage > 1) {
+                        console.warn('Contador excedido. Liberando envio apesar da validação falhar.');
+                        return true;
+                    }
+
                     showFlashMessage(message, 'info');
                     kmField.focus();
+                    setTimeout(() => {
+                        addRemoveDisabled(['enviar-btn'], ['remove']);
+                    }, 1000);
                     return false;
                 }
+
                 return true;
+
             } catch (error) {
                 console.error('Erro ao enviar dados ao servidor:', error);
-                // Em caso de erro, permitir continuar
                 return true;
             }
         } else {
-            console.warn('Servidor indisponível. Permitindo operação.');
+            console.warn('Servidor indisponível. Permitindo operação como fallback.');
             return true;
         }
     } catch (error) {
@@ -338,37 +369,71 @@ async function validateMileage() {
 }
 
 
+// variaveis permanentes para armazenar o ultimo par de posto, odometro e o contador
+let lastPosto = null;
+let lastOdometer = null;
+let contadorOdometer = 0;
+
 // verifica o odômetro inserido de forma assincrona
-async function validateOdometer(formID) {
-    const posto = document.getElementById('posto').value;
+async function validateOdometer(formId) {
+    const posto = document.getElementById('posto').value.trim();
+    const odometerField = document.getElementById('odometro');
+    const odometro = odometerField.value.trim();
 
     if (!posto.includes('BOMBA')) {
         return true;
     }
 
-    const odometerField = document.getElementById('odometro');
+    const isSameCombination = (posto === lastPosto) && (odometro === lastOdometer);
+
+    if (!isSameCombination) {
+        lastPosto = posto;
+        lastOdometer = odometro;
+        contadorOdometer = 0;
+    }
+
+    if (isSameCombination && contadorOdometer > 1) {
+        console.log('Validação ignorada. Liberando envio automaticamente.');
+        return true;
+    }
 
     try {
         const serverAvailable = await checkServerAvailability();
         if (serverAvailable) {
             try {
                 const { message, result } = await sendDataToServer(
-                    '/api/validate_odometer/' + posto + '/' + odometerField.value + '/' + formId,
+                    `/api/validate_odometer/${
+                    encodeURIComponent(posto)}/${
+                    encodeURIComponent(odometro)}/${
+                    encodeURIComponent(formId)}`,
                     null,
                     'GET'
                 );
+
                 if (!result) {
+                    contadorOdometer++;
+
+                    if (contadorOdometer > 1) {
+                        console.warn('Contador excedido. Liberando envio apesar da validação falhar.');
+                        return true;
+                    }
+
                     showFlashMessage(message, 'info');
                     odometerField.focus();
+                    setTimeout(() => {
+                        addRemoveDisabled(['enviar-btn'], ['remove']);
+                    }, 1000);
                     return false;
                 }
+
                 return true;
+
             } catch (error) {
                 console.error('Erro ao enviar dados ao servidor:', error);
                 return true;
             }
         } else {
-            console.warn('Servidor indisponível. Permitindo operação.');
+            console.warn('Servidor indisponível. Permitindo operação como fallback.');
             return true;
         }
     } catch (error) {
@@ -565,4 +630,26 @@ function formReset(form) {
 function setupOnlyLetters(idElement) {
     element = document.getElementById(idElement);
     element.value = element.value.toUpperCase().replace(/[0-9]/g, '');
+}
+
+// controla a propriedade disabled em elementos
+function addRemoveDisabled(element, option) {
+    var elementControlled = []
+    for (var i = 0; i < element.length; i++) {
+        elementControlled[i] = document.getElementById(element[i]);
+
+        if (option.length <= 1) {
+            if (option == 'add') {
+                elementControlled[i].disabled = true;
+            } else if (option == 'remove') {
+                elementControlled[i].disabled = false;
+            }
+        } else {
+            if (option[i] == 'add') {
+                elementControlled[i].disabled = true;
+            } else if (option[i] == 'remove') {
+                elementControlled[i].disabled = false;
+            }
+        }
+    }
 }
