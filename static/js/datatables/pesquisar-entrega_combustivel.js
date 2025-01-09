@@ -35,9 +35,14 @@ $(document).ready(() => {
             },
             {
                 data: 'data_lanc',
-                render: (data, type) => (
-                    (type === 'display' || type === 'filter') ? moment.utc(data).format('LLLL') : data
-                )
+                render: (data, type, row) => {
+                    if (!data) return '';
+                    if (type === 'display' || type === 'filter') {
+                        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric' };
+                        return new Date(data).toLocaleDateString('pt-BR', options);
+                    }
+                    return data;
+                }
             },
             { data: 'user' },
             { data: 'volume' },
