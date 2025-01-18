@@ -31,6 +31,9 @@
                     <li class="nav-item pesquisar" role="presentation">
                         <a class="nav-link" aria-current="page" href="{{ url_for('views.pesquisar')}}">&bull; Pesquisar</a>
                     </li>
+                    <li class="nav-item graficos" role="presentation">
+                        <a class="nav-link" aria-current="page" href="{{ url_for('views.graficos')}}">&bull; Graficos</a>
+                    </li>
                 </ul>
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item btn-logout" role="presentation">
@@ -71,6 +74,7 @@
     <!-- Moment.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
     <script src="https://cdn.datatables.net/plug-ins/1.10.24/sorting/datetime-moment.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/locale/pt-br.min.js"></script>
 
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 

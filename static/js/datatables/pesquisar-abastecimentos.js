@@ -1,6 +1,7 @@
 $(document).ready(() => {
     // configura o moment.js com o formato de data especifico
     $.fn.dataTable.moment('DD/MM/YYYY HH:mm:ss');
+    moment.locale('pt-br');
 
     // inicializa a tabela
     const table = $('#table-abastecimentos').DataTable({
@@ -35,11 +36,9 @@ $(document).ready(() => {
             },
             {
                 data: 'data_lanc',
-                render: (data, type, row) => {
-                    if (!data) return '';
+                render: function (data, type, row) {
                     if (type === 'display' || type === 'filter') {
-                        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric' };
-                        return new Date(data).toLocaleDateString('pt-BR', options);
+                        return moment.utc(data).locale('pt-br').format('LLLL');
                     }
                     return data;
                 }
