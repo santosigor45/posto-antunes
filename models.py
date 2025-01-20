@@ -1,3 +1,4 @@
+from datetime import datetime
 from ext.database import db
 from sqlalchemy.inspection import inspect
 from flask_login import UserMixin
@@ -79,6 +80,7 @@ class PontoVirada(db.Model):
 
 class Abastecimentos(db.Model):
     __tablename__ = "abastecimentos"
+
     id = db.Column(db.Integer, primary_key=True, autoincrement=True, nullable=False)
     user = db.Column(db.String(10), nullable=False)
     data_lanc = db.Column(db.DateTime)
@@ -100,6 +102,7 @@ class Abastecimentos(db.Model):
 
 class EntregaCombustivel(db.Model):
     __tablename__ = "entrega_combustivel"
+
     id = db.Column(db.Integer, primary_key=True, autoincrement=True, nullable=False)
     user = db.Column(db.String(10), nullable=False)
     data_lanc = db.Column(db.DateTime)
@@ -126,7 +129,15 @@ class User(db.Model, UserMixin):
         self.password = password
 
 
+class RequestToken(db.Model):
+    __tablename__ = "request_tokens"
+    id = db.Column(db.Integer, primary_key=True)
+    token = db.Column(db.String(36), unique=True, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.now)
+
+
 tables_dict = {table.__tablename__: table for table in db.Model.__subclasses__()}
+app_tables = set(tables_dict.keys())
 
 
 def table_object(table_name):
