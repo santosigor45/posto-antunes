@@ -1,6 +1,6 @@
 from flask import request, jsonify
 from flask_login import current_user
-from models import db, PontoVirada, VolumeAtual, Abastecimentos, EntregaCombustivel, RequestToken
+from models import db, PontoVirada, VolumeAtual, Abastecimentos, EntregaCombustivel, PostoToken
 from ext.utils import determine_pump
 from datetime import datetime
 from zoneinfo import ZoneInfo
@@ -191,14 +191,11 @@ def process_form(form_id):
 
         # unique token verification
         request_token = request.form.get('request_token')
-        token_existente = RequestToken.query.filter_by(token=request_token).first()
+        token_existente = PostoToken.query.filter_by(token=request_token).first()
         if token_existente:
-            return jsonify({
-                'type': 'error',
-                'message': 'Este formulário já foi enviado. Recarregue a página ou gere um novo token.',
-            })
+            return '', 204
 
-        novo_token = RequestToken(token=request_token)
+        novo_token = PostoToken(token=request_token)
         data_to_send.append(novo_token)
 
         # collect data based on form ID
