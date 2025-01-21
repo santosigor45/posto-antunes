@@ -4,19 +4,7 @@ from sqlalchemy.inspection import inspect
 from flask_login import UserMixin
 
 
-class Postos(db.Model):
-    __tablename__ = "postos"
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True, nullable=False)
-    posto = db.Column(db.String(30), nullable=False)
-    cidade = db.Column(db.String(30))
-
-    def to_dict(self):
-        return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
-
-    def __repr__(self):
-        return f"<Posto id={self.id} posto={self.posto}>"
-
-
+# tabelas compartilhadas
 class Cidades(db.Model):
     __tablename__ = "cidades"
     id = db.Column(db.Integer, primary_key=True, autoincrement=True, nullable=False)
@@ -54,6 +42,20 @@ class Motoristas(db.Model):
 
     def __repr__(self):
         return f"<Motorista id={self.id} motorista={self.motorista}>"
+
+
+# tabelas exclusivas
+class Postos(db.Model):
+    __tablename__ = "postos"
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True, nullable=False)
+    posto = db.Column(db.String(30), nullable=False)
+    cidade = db.Column(db.String(30))
+
+    def to_dict(self):
+        return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
+
+    def __repr__(self):
+        return f"<Posto id={self.id} posto={self.posto}>"
 
 
 class VolumeAtual(db.Model):
@@ -129,8 +131,8 @@ class User(db.Model, UserMixin):
         self.password = password
 
 
-class RequestToken(db.Model):
-    __tablename__ = "request_tokens"
+class PostoToken(db.Model):
+    __tablename__ = "posto_tokens"
     id = db.Column(db.Integer, primary_key=True)
     token = db.Column(db.String(36), unique=True, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.now)

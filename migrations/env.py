@@ -81,6 +81,7 @@ def run_migrations_offline():
         target_metadata=get_metadata(),
         literal_binds=True,
         include_object=include_object,
+        version_table='alembic_v_posto',
     )
 
     with context.begin_transaction():
@@ -116,6 +117,7 @@ def run_migrations_online():
             connection=connection,
             target_metadata=get_metadata(),
             include_object=include_object,
+            version_table='alembic_v_posto',
             **conf_args
         )
 
